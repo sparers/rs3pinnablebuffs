@@ -1,5 +1,5 @@
 {
-	"appName": "PinnableBuffs",
+	"appName": "PinableBuffs",
 	"description": "Simple app that tracks and let you pin the buffs.",
 	"appUrl": "./index.html",
 	"configUrl": "./appconfig.json",

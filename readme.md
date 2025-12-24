@@ -1,4 +1,4 @@
-# RS3 Pinnable Buffs
+# RS3 Pinable Buffs
 
 Track and pin your RuneScape 3 buffs with a customizable overlay.
 

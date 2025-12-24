@@ -1,6 +1,19 @@
-# Minimal Alt1/webpack/typescript example
+# RS3 Pinnable Buffs
 
-how to use
+Track and pin your RuneScape 3 buffs with a customizable overlay.
+
+## Installation
+
+Install directly in Alt1 Toolkit:
+
+```
+alt1://addapp/https://sparers.github.io/rs3-pinnable-buffs/appconfig.json
+```
+
+![alt text](image.png)
+
+## Development
+
 ```sh
 # to initialize the repo and install dependencies
 npm i
@@ -9,7 +22,3 @@ npm run build
 # alternatively to auto-rebuild when source files are changed
 npm run watch
 ```
-
-You can open `./dist/index.html` in your browser and it will give some basic functionality based one pasted images.
-
-You can also open it in the Alt1 browser and click the `add app` button that appears to get some basic alt1 functionality.

@@ -30,6 +30,7 @@ Alpine.data('buffsData', () => ({
   isDragging: false,
   alertedBuffs: new Set<string>(),
   audio: new Audio(alertSound),
+  activeTab: 'buffs',
 
   formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
@@ -59,6 +60,14 @@ Alpine.data('buffsData', () => ({
 
   setOverlayPosition() {
     buffManager.setOverlayPosition();
+  },
+
+  resetSettings() {
+    storage.clear();
+    this.buffs = [];
+    this.alertedBuffs.clear();
+    alert('Settings have been reset. Please refresh the page.');
+    location.reload();
   },
 
   onDragStart(event: DragEvent, index: number) {
@@ -159,7 +168,8 @@ Alpine.data('buffsData', () => ({
 function stripAlpine(html: string): string {
   return html
     .replace(/<template[^>]*>[\s\S]*?<\/template>/gi, '')
-    .replace(/\s+(x-[a-z:-]+|:[a-z-]+|@[a-z.-]+)(="[^"]*")?/gi, '');
+    .replace(/\s+(x-[a-z:-]+|:[a-z-]+|@[a-z.-]+)(="[^"]*")?/gi, '')
+    .replace(/\s+class="settings-section"/gi, '');
 }
 
 async function start() {

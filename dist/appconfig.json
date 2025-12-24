@@ -1,0 +1,16 @@
+{
+	"appName": "PinableBuffs",
+	"description": "Simple app that tracks and let you pin the buffs.",
+	"appUrl": "./index.html",
+	"configUrl": "./appconfig.json",
+	"iconUrl": "./icon.png",
+	"defaultWidth": 250,
+	"defaultHeight": 250,
+	"minWidth": 250,
+	"minHeight": 800,
+	"maxWidth": 250,
+	"maxHeight": 1000,
+	"requestHandlers": [],
+	"activators": [],
+	"permissions": "pixel, gamestate, overlay"
+}

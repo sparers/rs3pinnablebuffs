@@ -47,9 +47,11 @@ export class BuffManager {
           for (const buffData of registeredBuffs) {
             if (buffData.image == null) continue;
             const matchResult = activeBuff.countMatch(buffData.image, false);
+            if (buffData.debug) {
+              console.log(`debug: ${buffData.name}:${buffData.threshold} -> passed: ${matchResult.passed}`);
+            }
 
             if (matchResult.passed >= buffData.threshold) {
-              console.debug(buffData.name, matchResult.passed)
               const cooldown = activeBuff.readArg('timearg')?.time || 0;
               currentActiveBuffs.add(buffData.name);
 

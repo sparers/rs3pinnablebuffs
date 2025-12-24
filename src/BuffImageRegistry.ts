@@ -94,80 +94,272 @@ export class BuffImageRegistry {
 
     this._buffData = [
       // --- BUFFS ---
-      { name: "Overload", image: this.Buffs.overloaded, threshold: 300, path: './imgs/icons/overload.png' },
-      { name: "Elder Overload", image: this.Buffs.elderOverload, threshold: 60, path: './imgs/icons/elder_overload.png' },
-      { name: "Supreme Overload", image: this.Buffs.supremeOverloadActive, threshold: 30, path: './imgs/icons/supreme_overload.png' },
-      { name: "Weapon Poison", image: this.Buffs.poisonous, threshold: 300, path: './imgs/icons/weapon_poison.png' },
-      { name: "Darkness", image: this.Buffs.darkness, threshold: 400, path: './imgs/icons/darkness.png' },
-      { name: "Animate Dead", image: this.Buffs.animateDead, threshold: 60, path: './imgs/icons/animate_dead.png' },
-      { name: "FSOA Spec", image: this.Buffs.fsoaWeaponSpec, threshold: 80, path: './imgs/icons/fsoa_spec.png' },
-      { name: "Time Rift", image: this.Buffs.timeRift, threshold: 450, path: './imgs/icons/time_rift.png' },
-      { name: "Gladiators Rage", image: this.Buffs.gladiatorsRage, threshold: 50, path: './imgs/icons/gladiators_rage.png' },
-      { name: "Necrosis", image: this.Buffs.necrosis, threshold: 150, path: './imgs/icons/necrosis.png' },
-      { name: "Aura", image: this.Buffs.aura, threshold: 400, path: './imgs/icons/equilibrium_aura.png' },
-      { name: "Bonfire Boost", image: this.Buffs.bonfireBoost, threshold: 400, path: './imgs/icons/bonfire.png' },
-      { name: "Grimoire", image: this.Buffs.grimoire, threshold: 100, path: "./imgs/icons/grimoire.png" },
-      { name: "Lantadyme Incense", image: this.Incense.lantadyme, threshold: 119, path: './imgs/icons/lantadyme_incense_sticks.png' },
-      { name: "Dwarf Weed Incense", image: this.Incense.dwarfWeed, threshold: 150, path: './imgs/icons/dwarf_weed_incense_sticks.png' },
-      { name: "Fellstalk Incense", image: this.Incense.fellstalk, threshold: 150, path: './imgs/icons/fellstalk_weed_incense_sticks.png' },
-      { name: "Kwuarm Incense", image: this.Incense.kwuarm, threshold: 150, path: './imgs/icons/kwuarm_weed_incense_sticks.png' },
-      { name: "Antifire", image: this.Buffs.Antifire, threshold: 225, path: './imgs/icons/antifire.png' },
-      { name: "Aggression Potion", image: this.Buffs.AggressionPotion, threshold: 120, path: './imgs/icons/aggression_potion.png' },
-      { name: "Powder of Protection", image: this.Buffs.PowderOfProtection, threshold: 130, path: './imgs/icons/powder_of_protection.png' },
-      { name: "Powder of Penance", image: this.Buffs.PowderOfPenance, threshold: 130, path: './imgs/icons/powder_of_penance.png' },
-      { name: "Prayer Renewal", image: this.Buffs.prayerRenewActive, threshold: 225, path: './imgs/icons/prayer_renewal.data.png' },
-      { name: "Death Spark", image: this.Buffs.DeathSpark, threshold: 300, path: './imgs/icons/death_spark.png' },
-      { name: "Balance By Force", image: this.Buffs.balanceByForce, threshold: 30, path: './imgs/icons/balance_by_force.png' },
-      { name: "BOLG Stacks", image: this.Buffs.perfectEquilibriumNoBorder, threshold: 300, path: './imgs/icons/perfect_equilibrium.png' },
-      { name: "Anticipation", image: this.Buffs.Anticipation, threshold: 300, path: './imgs/icons/anticipation.png' },
-      { name: "Barricade", image: this.Buffs.Barricade, threshold: 300, path: './imgs/icons/barricade.png' },
-      { name: "Devotion", image: this.Buffs.Devotion, threshold: 300, path: './imgs/icons/devotion.png' },
-      { name: "Divert", image: this.Buffs.Divert, threshold: 300, path: './imgs/icons/divert.png' },
-      { name: "Freedom", image: this.Buffs.Freedom, threshold: 300, path: './imgs/icons/freedom.png' },
-      { name: "Immortality", image: this.Buffs.Immortality, threshold: 300, path: './imgs/icons/immortality.png' },
-      { name: "Reflect", image: this.Buffs.Reflect, threshold: 300, path: './imgs/icons/reflect.png' },
-      { name: "Resonance", image: this.Buffs.Resonance, threshold: 300, path: './imgs/icons/resonance.png' },
-      { name: "Split Soul", image: this.Buffs.SplitSoul, threshold: 350, path: './imgs/icons/split_soul.png' },
-      { name: "Threads of Fate", image: this.Buffs.ThreadsOfFate, threshold: 300, path: './imgs/icons/threads_of_fate.png' },
+      {
+        name: "Overload", image: this.Buffs.overloaded, threshold: 300, path: './imgs/icons/overload.png',
+        debug: false
+      },
+      {
+        name: "Elder Overload", image: this.Buffs.elderOverload, threshold: 60, path: './imgs/icons/elder_overload.png',
+        debug: false
+      },
+      {
+        name: "Supreme Overload", image: this.Buffs.supremeOverloadActive, threshold: 30, path: './imgs/icons/supreme_overload.png',
+        debug: false
+      },
+      {
+        name: "Weapon Poison", image: this.Buffs.poisonous, threshold: 300, path: './imgs/icons/weapon_poison.png',
+        debug: false
+      },
+      {
+        name: "Darkness", image: this.Buffs.darkness, threshold: 400, path: './imgs/icons/darkness.png',
+        debug: false
+      },
+      {
+        name: "Animate Dead", image: this.Buffs.animateDead, threshold: 60, path: './imgs/icons/animate_dead.png',
+        debug: false
+      },
+      {
+        name: "FSOA Spec", image: this.Buffs.fsoaWeaponSpec, threshold: 80, path: './imgs/icons/fsoa_spec.png',
+        debug: false
+      },
+      {
+        name: "Time Rift", image: this.Buffs.timeRift, threshold: 450, path: './imgs/icons/time_rift.png',
+        debug: false
+      },
+      {
+        name: "Gladiators Rage", image: this.Buffs.gladiatorsRage, threshold: 50, path: './imgs/icons/gladiators_rage.png',
+        debug: false
+      },
+      {
+        name: "Necrosis", image: this.Buffs.necrosis, threshold: 150, path: './imgs/icons/necrosis.png',
+        debug: false
+      },
+      {
+        name: "Aura", image: this.Buffs.aura, threshold: 400, path: './imgs/icons/equilibrium_aura.png',
+        debug: false
+      },
+      {
+        name: "Bonfire Boost", image: this.Buffs.bonfireBoost, threshold: 400, path: './imgs/icons/bonfire.png',
+        debug: false
+      },
+      {
+        name: "Grimoire", image: this.Buffs.grimoire, threshold: 100, path: "./imgs/icons/grimoire.png",
+        debug: false
+      },
+      {
+        name: "Lantadyme Incense", image: this.Incense.lantadyme, threshold: 119, path: './imgs/icons/lantadyme_incense_sticks.png',
+        debug: false
+      },
+      {
+        name: "Dwarf Weed Incense", image: this.Incense.dwarfWeed, threshold: 150, path: './imgs/icons/dwarf_weed_incense_sticks.png',
+        debug: false
+      },
+      {
+        name: "Fellstalk Incense", image: this.Incense.fellstalk, threshold: 150, path: './imgs/icons/fellstalk_weed_incense_sticks.png',
+        debug: false
+      },
+      {
+        name: "Kwuarm Incense", image: this.Incense.kwuarm, threshold: 150, path: './imgs/icons/kwuarm_weed_incense_sticks.png',
+        debug: false
+      },
+      {
+        name: "Antifire", image: this.Buffs.Antifire, threshold: 225, path: './imgs/icons/antifire.png',
+        debug: false
+      },
+      {
+        name: "Aggression Potion", image: this.Buffs.AggressionPotion, threshold: 120, path: './imgs/icons/aggression_potion.png',
+        debug: false
+      },
+      {
+        name: "Powder of Protection", image: this.Buffs.PowderOfProtection, threshold: 130, path: './imgs/icons/powder_of_protection.png',
+        debug: false
+      },
+      {
+        name: "Powder of Penance", image: this.Buffs.PowderOfPenance, threshold: 130, path: './imgs/icons/powder_of_penance.png',
+        debug: false
+      },
+      {
+        name: "Prayer Renewal", image: this.Buffs.prayerRenewActive, threshold: 225, path: './imgs/icons/prayer_renewal.data.png',
+        debug: false
+      },
+      {
+        name: "Death Spark", image: this.Buffs.DeathSpark, threshold: 300, path: './imgs/icons/death_spark.png',
+        debug: false
+      },
+      {
+        name: "Balance By Force", image: this.Buffs.balanceByForce, threshold: 30, path: './imgs/icons/balance_by_force.png',
+        debug: false
+      },
+      {
+        name: "BOLG Stacks", image: this.Buffs.perfectEquilibriumNoBorder, threshold: 300, path: './imgs/icons/perfect_equilibrium.png',
+        debug: false
+      },
+      {
+        name: "Anticipation", image: this.Buffs.Anticipation, threshold: 300, path: './imgs/icons/anticipation.png',
+        debug: false
+      },
+      {
+        name: "Barricade", image: this.Buffs.Barricade, threshold: 300, path: './imgs/icons/barricade.png',
+        debug: false
+      },
+      {
+        name: "Devotion", image: this.Buffs.Devotion, threshold: 300, path: './imgs/icons/devotion.png',
+        debug: false
+      },
+      {
+        name: "Divert", image: this.Buffs.Divert, threshold: 300, path: './imgs/icons/divert.png',
+        debug: false
+      },
+      {
+        name: "Freedom", image: this.Buffs.Freedom, threshold: 300, path: './imgs/icons/freedom.png',
+        debug: false
+      },
+      {
+        name: "Immortality", image: this.Buffs.Immortality, threshold: 300, path: './imgs/icons/immortality.png',
+        debug: false
+      },
+      {
+        name: "Reflect", image: this.Buffs.Reflect, threshold: 300, path: './imgs/icons/reflect.png',
+        debug: false
+      },
+      {
+        name: "Resonance", image: this.Buffs.Resonance, threshold: 300, path: './imgs/icons/resonance.png',
+        debug: false
+      },
+      {
+        name: "Split Soul", image: this.Buffs.SplitSoul, threshold: 350, path: './imgs/icons/split_soul.png',
+        debug: false
+      },
+      {
+        name: "Threads of Fate", image: this.Buffs.ThreadsOfFate, threshold: 300, path: './imgs/icons/threads_of_fate.png',
+        debug: false
+      },
 
 
-      { name: "Conjure Skeleton", image: this.Buffs.ConjureSkeleton, threshold: 300, path: './imgs/icons/skeleton_warrior.png' },
-      { name: "Conjure Zombie", image: this.Buffs.ConjureZombie, threshold: 300, path: './imgs/icons/putrid_zombie.png' },
-      { name: "Conjure Ghost", image: this.Buffs.ConjureGhost, threshold: 300, path: './imgs/icons/vengeful_ghost.png' },
-      { name: "Split Soul ECB", image: this.Buffs.SplitSoulECB, threshold: 60, path: './imgs/icons/split_soul_ecb.png' },
-      { name: "Invoke Lord of Bones", image: this.Buffs.InvokeLordOfBones, threshold: 180, path: './imgs/icons/lord_of_bones.png' },
-      { name: "Adren Crit", image: this.Buffs.adrenCrit, threshold: 300, path: './imgs/icons/adren_crit_buff.png' },
-      { name: "Glacial Embrace", image: this.Buffs.glacialEmbrace, threshold: 60, path: './imgs/icons/glacial_embrace.png' },
-      { name: "Blood Tithe", image: this.Buffs.bloodTithe, threshold: 60, path: './imgs/icons/blood_tithe.png' },
+      {
+        name: "Conjure Skeleton", image: this.Buffs.ConjureSkeleton, threshold: 300, path: './imgs/icons/skeleton_warrior.png',
+        debug: false
+      },
+      {
+        name: "Conjure Zombie", image: this.Buffs.ConjureZombie, threshold: 300, path: './imgs/icons/putrid_zombie.png',
+        debug: false
+      },
+      {
+        name: "Conjure Ghost", image: this.Buffs.ConjureGhost, threshold: 300, path: './imgs/icons/vengeful_ghost.png',
+        debug: false
+      },
+      {
+        name: "Split Soul ECB", image: this.Buffs.SplitSoulECB, threshold: 60, path: './imgs/icons/split_soul_ecb.png',
+        debug: false
+      },
+      {
+        name: "Invoke Lord of Bones", image: this.Buffs.InvokeLordOfBones, threshold: 180, path: './imgs/icons/lord_of_bones.png',
+        debug: false
+      },
+      {
+        name: "Adren Crit", image: this.Buffs.adrenCrit, threshold: 300, path: './imgs/icons/adren_crit_buff.png',
+        debug: false
+      },
+      {
+        name: "Glacial Embrace", image: this.Buffs.glacialEmbrace, threshold: 60, path: './imgs/icons/glacial_embrace.png',
+        debug: false
+      },
+      {
+        name: "Blood Tithe", image: this.Buffs.bloodTithe, threshold: 60, path: './imgs/icons/blood_tithe.png',
+        debug: false
+      },
 
       // --- DEBUFFS ---
-      { name: "Ancient Elven Ritual Shard", image: this.Debuffs.elvenRitualShard, threshold: 90, path: './imgs/buffs/Ancient_Elven_Ritual_Shard-noborder.data.png' },
-      { name: "Adrenaline Potion Debuff", image: this.Debuffs.adrenalinePotion, threshold: 300, path: './imgs/buffs/Adrenaline_Potion-noborder.data.png' },
-      { name: "Death Guard Debuff", image: this.Debuffs.deathGraspDebuff, threshold: 90, path: './imgs/icons/death_guard.png' },
-      { name: "Omni Guard Debuff", image: this.Debuffs.deathEssenceDebuff, threshold: 60, path: './imgs/icons/omni_guard.png' },
-      { name: "Enhanced Excalibur Debuff", image: this.Debuffs.enhancedExcaliburDebuff, threshold: 15, path: './imgs/icons/excalibur.png' },
-      { name: "Crystal Rain Debuff", image: this.Debuffs.crystalRainMinimal, threshold: 60, path: './imgs/buffs/Crystal_Rain-minimal-noborder.data.png' },
-      { name: "Stunned Debuff", image: this.Debuffs.stunnedDebuff, threshold: 60, path: './imgs/buffs/Stunned.data.png' },
-      { name: "Sign of Life Debuff", image: this.Debuffs.signOfLifeDebuff, threshold: 20, path: './imgs/icons/sign_of_life.png' },
-      { name: "Powerburst Prevention", image: this.Debuffs.powerburstPrevention, threshold: 20, path: './imgs/buffs/Powerburst_prevention.data.png' },
-      { name: "Deathspore Arrows (Buff Bar)", image: this.Debuffs.FeastingSpores, threshold: 18, path: './imgs/buffs/deathspore_arrows.data.png' },
-      { name: "Cannon Decay", image: this.Debuffs.cannon, threshold: 120, path: './imgs/icons/cannonball.png' },
+      {
+        name: "Ancient Elven Ritual Shard", image: this.Debuffs.elvenRitualShard, threshold: 90, path: './imgs/buffs/Ancient_Elven_Ritual_Shard-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Adrenaline Potion Debuff", image: this.Debuffs.adrenalinePotion, threshold: 300, path: './imgs/buffs/Adrenaline_Potion-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Death Guard Debuff", image: this.Debuffs.deathGraspDebuff, threshold: 90, path: './imgs/icons/death_guard.png',
+        debug: false
+      },
+      {
+        name: "Omni Guard Debuff", image: this.Debuffs.deathEssenceDebuff, threshold: 60, path: './imgs/icons/omni_guard.png',
+        debug: false
+      },
+      {
+        name: "Enhanced Excalibur Debuff", image: this.Debuffs.enhancedExcaliburDebuff, threshold: 15, path: './imgs/icons/excalibur.png',
+        debug: false
+      },
+      {
+        name: "Crystal Rain Debuff", image: this.Debuffs.crystalRainMinimal, threshold: 60, path: './imgs/buffs/Crystal_Rain-minimal-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Stunned Debuff", image: this.Debuffs.stunnedDebuff, threshold: 60, path: './imgs/buffs/Stunned.data.png',
+        debug: false
+      },
+      {
+        name: "Sign of Life Debuff", image: this.Debuffs.signOfLifeDebuff, threshold: 20, path: './imgs/icons/sign_of_life.png',
+        debug: false
+      },
+      {
+        name: "Powerburst Prevention", image: this.Debuffs.powerburstPrevention, threshold: 20, path: './imgs/buffs/Powerburst_prevention.data.png',
+        debug: false
+      },
+      {
+        name: "Deathspore Arrows (Buff Bar)", image: this.Debuffs.FeastingSpores, threshold: 18, path: './imgs/buffs/deathspore_arrows.data.png',
+        debug: false
+      },
+      { name: "Cannon Decay", image: this.Debuffs.cannon, threshold: 120, path: './imgs/icons/cannonball.png', debug: true },
 
 
       // --- ULTIMATES ---
-      { name: "Berserk", image: this.Ultimates.berserk, threshold: 200, path: './imgs/buffs/Berserk-noborder.data.png' },
-      { name: "Deaths Swiftness", image: this.Ultimates.deathsSwiftness, threshold: 270, path: './imgs/icons/deaths_swiftness.png' },
-      { name: "Greater Deaths Swiftness", image: this.Ultimates.greaterDeathsSwiftness, threshold: 450, path: "./imgs/buffs/Greater_Death's_Swiftness-noborder.data.png" },
-      { name: "Sunshine", image: this.Ultimates.sunshine, threshold: 500, path: './imgs/buffs/Sunshine-noborder.data.png' },
-      { name: "Greater Sunshine", image: this.Ultimates.greaterSunshine, threshold: 100, path: './imgs/buffs/Greater_Sunshine-noborder.data.png' },
-      { name: "Living Death", image: this.Ultimates.livingDeath, threshold: 400, path: './imgs/buffs/Living_Death-noborder.data.png' },
+      {
+        name: "Berserk", image: this.Ultimates.berserk, threshold: 200, path: './imgs/buffs/Berserk-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Deaths Swiftness", image: this.Ultimates.deathsSwiftness, threshold: 270, path: './imgs/icons/deaths_swiftness.png',
+        debug: false
+      },
+      {
+        name: "Greater Deaths Swiftness", image: this.Ultimates.greaterDeathsSwiftness, threshold: 450, path: "./imgs/buffs/Greater_Death's_Swiftness-noborder.data.png",
+        debug: false
+      },
+      {
+        name: "Sunshine", image: this.Ultimates.sunshine, threshold: 500, path: './imgs/buffs/Sunshine-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Greater Sunshine", image: this.Ultimates.greaterSunshine, threshold: 100, path: './imgs/buffs/Greater_Sunshine-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Living Death", image: this.Ultimates.livingDeath, threshold: 400, path: './imgs/buffs/Living_Death-noborder.data.png',
+        debug: false
+      },
 
       // --- SIGILS ---
-      { name: "Limitless", image: this.Sigils.limitless, threshold: 250, path: './imgs/buffs/Limitless-noborder.data.png' },
-      { name: "Demon Slayer", image: this.Sigils.demonSlayer, threshold: 400, path: './imgs/buffs/Demon_Slayer-noborder.data.png' },
-      { name: "Dragon Slayer", image: this.Sigils.dragonSlayer, threshold: 400, path: './imgs/buffs/Dragon_Slayer-noborder.data.png' },
-      { name: "Undead Slayer", image: this.Sigils.undeadSlayer, threshold: 400, path: './imgs/buffs/Undead_Slayer-noborder.data.png' },
-      { name: "Ingenuity of the Humans", image: this.Sigils.ingenuityOfTheHumans, threshold: 400, path: './imgs/buffs/Ingenuity_of_the_Humans-noborder.data.png' },
+      {
+        name: "Limitless", image: this.Sigils.limitless, threshold: 250, path: './imgs/buffs/Limitless-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Demon Slayer", image: this.Sigils.demonSlayer, threshold: 400, path: './imgs/buffs/Demon_Slayer-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Dragon Slayer", image: this.Sigils.dragonSlayer, threshold: 400, path: './imgs/buffs/Dragon_Slayer-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Undead Slayer", image: this.Sigils.undeadSlayer, threshold: 400, path: './imgs/buffs/Undead_Slayer-noborder.data.png',
+        debug: false
+      },
+      {
+        name: "Ingenuity of the Humans", image: this.Sigils.ingenuityOfTheHumans, threshold: 400, path: './imgs/buffs/Ingenuity_of_the_Humans-noborder.data.png',
+        debug: false
+      },
     ];
 
     this.initialized = true;
@@ -180,6 +372,6 @@ export class BuffImageRegistry {
     return this._buffData;
   }
 
-  private static _buffData: Array<{ name: string; image: any; threshold: number; path: string }> = [];
+  private static _buffData: Array<{ name: string; image: any; threshold: number; path: string, debug: boolean }> = [];
 }
 

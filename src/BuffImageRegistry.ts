@@ -72,6 +72,7 @@ export class BuffImageRegistry {
       signOfLifeDebuff: require('./imgs/buffs/Sign_of_Life-top.data.png'),
       powerburstPrevention: require('./imgs/buffs/Powerburst_prevention.data.png'),
       FeastingSpores: require('./imgs/buffs/deathspore_arrows.data.png'),
+      cannon: require('./imgs/buffs/cannon_active-top.data.png'),
     }).promise;
 
     this.Ultimates = await a1lib.webpackImages({
@@ -105,7 +106,7 @@ export class BuffImageRegistry {
       { name: "Necrosis", image: this.Buffs.necrosis, threshold: 150, path: './imgs/icons/necrosis.png' },
       { name: "Aura", image: this.Buffs.aura, threshold: 400, path: './imgs/icons/equilibrium_aura.png' },
       { name: "Bonfire Boost", image: this.Buffs.bonfireBoost, threshold: 400, path: './imgs/icons/bonfire.png' },
-      { name: "Grimoire", image: this.Buffs.grimoire, threshold: 55, path: "./imgs/icons/grimoire.png" },
+      { name: "Grimoire", image: this.Buffs.grimoire, threshold: 100, path: "./imgs/icons/grimoire.png" },
       { name: "Lantadyme Incense", image: this.Incense.lantadyme, threshold: 119, path: './imgs/icons/lantadyme_incense_sticks.png' },
       { name: "Dwarf Weed Incense", image: this.Incense.dwarfWeed, threshold: 150, path: './imgs/icons/dwarf_weed_incense_sticks.png' },
       { name: "Fellstalk Incense", image: this.Incense.fellstalk, threshold: 150, path: './imgs/icons/fellstalk_weed_incense_sticks.png' },
@@ -150,6 +151,8 @@ export class BuffImageRegistry {
       { name: "Sign of Life Debuff", image: this.Debuffs.signOfLifeDebuff, threshold: 20, path: './imgs/icons/sign_of_life.png' },
       { name: "Powerburst Prevention", image: this.Debuffs.powerburstPrevention, threshold: 20, path: './imgs/buffs/Powerburst_prevention.data.png' },
       { name: "Deathspore Arrows (Buff Bar)", image: this.Debuffs.FeastingSpores, threshold: 18, path: './imgs/buffs/deathspore_arrows.data.png' },
+      { name: "Cannon Decay", image: this.Debuffs.cannon, threshold: 120, path: './imgs/icons/cannonball.png' },
+
 
       // --- ULTIMATES ---
       { name: "Berserk", image: this.Ultimates.berserk, threshold: 200, path: './imgs/buffs/Berserk-noborder.data.png' },

@@ -32,11 +32,13 @@ Alpine.data('buffsData', () => ({
   alertedBuffs: new Set<string>(),
   audio: new Audio(alertSound),
   activeTab: 'buffs',
+  timestamp: null,
+  lastUpdate: Date.now(),
 
   formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${Math.floor(secs).toString().padStart(2, '0')}`;
   },
 
   togglePin(buffName: string) {
@@ -127,8 +129,16 @@ Alpine.data('buffsData', () => ({
     });
   },
 
+
   async init() {
     const updateLoop = async () => {
+      if (this.timestamp === null) {
+        this.timestamp = Date.now();
+      } else {
+        const timeSinceLastUpdate = Date.now() - this.timestamp;
+        console.log(timeSinceLastUpdate);
+        this.timestamp = Date.now();
+      }
       // Skip update if user is dragging buffs
       if (!this.isDragging) {
         const existingBuffs = await buffManager.getActiveBuffs();

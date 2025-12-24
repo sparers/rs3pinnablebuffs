@@ -254,8 +254,8 @@ export class BuffImageRegistry {
       {
         name: "Barricade", image: this.Buffs.Barricade, threshold: 300, path: './imgs/icons/barricade.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 60,
+        hasCooldown: true
       },
       {
         name: "Devotion", image: this.Buffs.Devotion, threshold: 300, path: './imgs/icons/devotion.png',
@@ -278,8 +278,8 @@ export class BuffImageRegistry {
       {
         name: "Immortality", image: this.Buffs.Immortality, threshold: 300, path: './imgs/icons/immortality.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 120,
+        hasCooldown: true
       },
       {
         name: "Reflect", image: this.Buffs.Reflect, threshold: 300, path: './imgs/icons/reflect.png',
@@ -290,8 +290,8 @@ export class BuffImageRegistry {
       {
         name: "Resonance", image: this.Buffs.Resonance, threshold: 300, path: './imgs/icons/resonance.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 30,
+        hasCooldown: true,
       },
       {
         name: "Split Soul", image: this.Buffs.SplitSoul, threshold: 350, path: './imgs/icons/split_soul.png',
@@ -302,8 +302,8 @@ export class BuffImageRegistry {
       {
         name: "Threads of Fate", image: this.Buffs.ThreadsOfFate, threshold: 300, path: './imgs/icons/threads_of_fate.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 45,
+        hasCooldown: true
       },
 
 
@@ -433,14 +433,14 @@ export class BuffImageRegistry {
       {
         name: "Berserk", image: this.Ultimates.berserk, threshold: 200, path: './imgs/buffs/Berserk-noborder.data.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 60,
+        hasCooldown: true
       },
       {
         name: "Deaths Swiftness", image: this.Ultimates.deathsSwiftness, threshold: 270, path: './imgs/icons/deaths_swiftness.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 60,
+        hasCooldown: true
       },
       {
         name: "Greater Deaths Swiftness", image: this.Ultimates.greaterDeathsSwiftness, threshold: 450, path: "./imgs/buffs/Greater_Death's_Swiftness-noborder.data.png",
@@ -451,8 +451,8 @@ export class BuffImageRegistry {
       {
         name: "Sunshine", image: this.Ultimates.sunshine, threshold: 500, path: './imgs/buffs/Sunshine-noborder.data.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 60,
+        hasCooldown: true
       },
       {
         name: "Greater Sunshine", image: this.Ultimates.greaterSunshine, threshold: 100, path: './imgs/buffs/Greater_Sunshine-noborder.data.png',
@@ -463,8 +463,8 @@ export class BuffImageRegistry {
       {
         name: "Living Death", image: this.Ultimates.livingDeath, threshold: 400, path: './imgs/buffs/Living_Death-noborder.data.png',
         debug: false,
-        cooldown: 0,
-        hasCooldown: false
+        cooldown: 90,
+        hasCooldown: true
       },
 
       // --- SIGILS ---

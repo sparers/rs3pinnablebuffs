@@ -170,7 +170,7 @@ export class BuffManager {
   private updateCooldowns = (): void => {
     const now = Date.now();
     Array.from(this.matchedBuffsCache.values()).forEach(buff => {
-      const elapsed = Math.floor((now - buff.lastUpdate) / 1000);
+      const elapsed = (now - buff.lastUpdate) / 1000;
       if (elapsed > 0) {
         // Update buff duration
         if (buff.buffCooldown > 0) {

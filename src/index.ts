@@ -114,7 +114,7 @@ Alpine.data('buffsData', () => ({
     this.buffs.forEach(buff => {
       const isFlashing = buff.progress <= 30 && !buff.inactive && buff.cooldown <= 60;
 
-      if (isFlashing && buff.isAudioQueued && !this.alertedBuffs.has(buff.name)) {
+      if (isFlashing && buff.isAudioQueued && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
         // Play alert sound
         this.audio.currentTime = 0;
         this.audio.play().catch(err => console.log('Audio play failed:', err));

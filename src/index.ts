@@ -18,6 +18,7 @@ if (window.alt1) {
   settings.className = "";
 } else {
   const output = document.getElementById("output") as HTMLElement;
+  output.className = "";
   const addAppUrl = `alt1://addapp/${new URL("./appconfig.json", document.location.href).href}`;
   output.insertAdjacentHTML("beforeend", `
     Alt1 not detected, click <a href='${addAppUrl}'>here</a> to add this app to Alt1

@@ -8,6 +8,7 @@
     <div id="output"></div>
     <div id="settings" class="hidden" x-data="buffsData">
       <button x-on:click="setOverlayPosition()" class="nisbutton">Set overlay</button>
+      <p>[Info] buffs that are in progress and the duration is greather then 60s will start to tick when they change the timestamp. eg: from 5m to 4m.</p>
       <h2>Buff history</h2>
       <div id="buffs-output">
         <template x-for="(buff, index) in buffs" :key="buff.name">

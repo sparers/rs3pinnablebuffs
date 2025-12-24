@@ -10,13 +10,16 @@ export interface BuffData {
 export interface BuffCacheEntry {
     name: string;
     imagePath: string;
-    cooldown: number;
+    buffCooldown: number;
     inactive: boolean;
     lastUpdate: number;
     progress: number;
-    initialCooldown: number;
+    initialBuffCooldown: number;
     isPinned: boolean;
     isAudioQueued: boolean;
+    cooldown: number;
+    cooldownProgress: number;
+    initialiCooldown: number
     order: number;
 }
 

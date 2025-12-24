@@ -52,42 +52,45 @@ export class BuffManager {
             }
 
             if (matchResult.passed >= buffData.threshold) {
-              const cooldown = activeBuff.readArg('timearg')?.time || 0;
+              const buffCooldown = activeBuff.readArg('timearg')?.time || 0;
               currentActiveBuffs.add(buffData.name);
 
               const existingBuff = this.matchedBuffsCache.get(buffData.name);
 
               // Determine cooldown and progress based on buff duration
-              let newCooldown: number;
+              let newBuffCooldown: number;
               let newProgress: number;
               let newInitialCooldown: number;
 
-              if (cooldown <= 59) {
+              if (buffCooldown <= 59) {
                 // For short buffs, always use game's cooldown
-                newCooldown = cooldown;
-                newInitialCooldown = existingBuff?.initialCooldown || cooldown;
-                newProgress = newInitialCooldown > 0 ? (cooldown / newInitialCooldown) * 100 : 0;
-              } else if (!existingBuff || cooldown > existingBuff.cooldown) {
+                newBuffCooldown = buffCooldown;
+                newInitialCooldown = existingBuff?.initialBuffCooldown || buffCooldown;
+                newProgress = newInitialCooldown > 0 ? (buffCooldown / newInitialCooldown) * 100 : 0;
+              } else if (!existingBuff || buffCooldown > existingBuff.buffCooldown) {
                 // For long buffs, only reset if new or cooldown increased
-                newCooldown = cooldown;
-                newInitialCooldown = cooldown;
+                newBuffCooldown = buffCooldown;
+                newInitialCooldown = buffCooldown;
                 newProgress = 100;
               } else {
                 // Keep existing values and let updateCooldowns() tick them down
-                newCooldown = existingBuff.cooldown;
-                newInitialCooldown = existingBuff.initialCooldown;
+                newBuffCooldown = existingBuff.buffCooldown;
+                newInitialCooldown = existingBuff.initialBuffCooldown;
                 newProgress = existingBuff.progress;
               }
 
               this.matchedBuffsCache.set(buffData.name, {
                 name: buffData.name,
                 imagePath: buffData.path,
-                cooldown: newCooldown,
+                buffCooldown: newBuffCooldown,
                 inactive: false,
                 lastUpdate: existingBuff?.lastUpdate || Date.now(),
                 progress: newProgress,
-                initialCooldown: newInitialCooldown,
-                isPinned: existingBuff?.isPinned || false, isAudioQueued: existingBuff?.isAudioQueued || false, order: existingBuff?.order ?? 999
+                initialBuffCooldown: newInitialCooldown,
+                isPinned: existingBuff?.isPinned || false, isAudioQueued: existingBuff?.isAudioQueued || false, order: existingBuff?.order ?? 999,
+                cooldown: 0,
+                cooldownProgress: 0,
+                initialiCooldown: 0
               });
               break;
             }
@@ -131,11 +134,11 @@ export class BuffManager {
     const now = Date.now();
     Array.from(this.matchedBuffsCache.values()).forEach(buff => {
       const elapsed = Math.floor((now - buff.lastUpdate) / 1000);
-      if (elapsed > 0 && buff.cooldown > 0) {
-        buff.cooldown = Math.max(0, buff.cooldown - elapsed);
+      if (elapsed > 0 && buff.buffCooldown > 0) {
+        buff.buffCooldown = Math.max(0, buff.buffCooldown - elapsed);
         buff.lastUpdate = now;
-        if (buff.initialCooldown > 0) {
-          buff.progress = Math.max(0, (buff.cooldown / buff.initialCooldown) * 100);
+        if (buff.initialBuffCooldown > 0) {
+          buff.progress = Math.max(0, (buff.buffCooldown / buff.initialBuffCooldown) * 100);
         } else {
           buff.progress = 0;
         }
@@ -162,13 +165,16 @@ export class BuffManager {
         this.matchedBuffsCache.set(buff.name, {
           name: buff.name,
           imagePath: buff.imagePath || '',
-          cooldown: 0,
+          buffCooldown: 0,
           inactive: true,
           lastUpdate: Date.now(),
           progress: 0,
-          initialCooldown: 0,
+          initialBuffCooldown: 0,
           isPinned: buff.isPinned,
           isAudioQueued: buff.isAudioQueued,
+          cooldown: 0,
+          cooldownProgress: 0,
+          initialiCooldown: 0,
           order: buff.order ?? 999
         });
       });

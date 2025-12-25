@@ -113,9 +113,14 @@
           <div class="settings-section" x-show="hasAlertedBuffs()" id="alerted-buffs">
               <div class="alerted-buffs-row">
                 <template x-for="(buff, index) in buffs" :key="buff.name">
-                    <div class="stat-icon buff-icon large" x-show="isAlerted(buff.name)">
+                    <div class="stat-icon buff-icon cooldown" x-show="isAlerted(buff.name)">
                       <img class="buff-icon-img" :src="buff.imagePath" :alt="buff.name" />
                       <span class="timer" x-text="parseInt(buff.abilityCooldown)"></span>
+                    </div>
+                </template>
+                <template x-for="(buff, index) in targetDebuffs" :key="buff.name">
+                    <div class="stat-icon buff-icon cooldown" :class="{ 'disabled': buff.abilityCooldown === 0 }">
+                      <img class="buff-icon-img" :src="buff.path" :alt="buff.name" />
                     </div>
                 </template>
               </div>
@@ -131,6 +136,49 @@
           <div class="header-buttons">
             <button x-on:click="setOverlayPosition('buffsOverlayGroup')" class="nisbutton">Set buffs</button>
             <button x-on:click="setOverlayPosition('centerOverlayGroup')" class="nisbutton">Set alerts</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>Target Debuffs</h2>
+          <p>Select which target debuffs to track.</p>
+          <div class="overlay-settings-form">
+            <div class="overlay-settings-field">
+              <label for="vulnerability-checkbox">Vulnerability:</label>
+              <input 
+                id="vulnerability-checkbox" 
+                type="checkbox" 
+                x-model="overlaySettingsForm.trackedTargetDebuffs.vulnerability" 
+                @change="saveOverlaySettings()"
+              />
+            </div>
+            <div class="overlay-settings-field">
+              <label for="deathmark-checkbox">Death Mark:</label>
+              <input 
+                id="deathmark-checkbox" 
+                type="checkbox" 
+                x-model="overlaySettingsForm.trackedTargetDebuffs.deathMark" 
+                @change="saveOverlaySettings()"
+              />
+            </div>
+            <div class="overlay-settings-field">
+              <label for="bloat-checkbox">Bloat:</label>
+              <input 
+                id="bloat-checkbox" 
+                type="checkbox" 
+                x-model="overlaySettingsForm.trackedTargetDebuffs.bloat" 
+                @change="saveOverlaySettings()"
+              />
+            </div>
+            <div class="overlay-settings-field">
+              <label for="target-audio-alert-checkbox">Enable Audio Alert for target debuffs:</label>
+              <input 
+                id="target-audio-alert-checkbox" 
+                type="checkbox" 
+                x-model="overlaySettingsForm.targetDebuffAudioAlert" 
+                @change="saveOverlaySettings()"
+              />
+            </div>
           </div>
         </div>
 

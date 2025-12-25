@@ -47,6 +47,8 @@ export interface OverlaySettings {
     scale: number;
     buffDurationAlertThreshold: number;
     abilityCooldownAlertThreshold: number;
+    trackedTargetDebuffs: Record<string, boolean>;
+    targetDebuffAudioAlert: boolean;
 }
 
 export type ImageCollection = Record<string, ImgRef>;

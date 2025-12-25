@@ -1,5 +1,6 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
+import * as TargetMob from 'alt1/targetmob';
 import * as htmlToImage from 'html-to-image';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { LocalStorageHelper } from './LocalStorageHelper';
@@ -9,6 +10,7 @@ export class BuffManager {
   private readonly buffs: BuffReader.default;
   private readonly debuffs: BuffReader.default;
   private readonly storage: LocalStorageHelper;
+  private readonly targetMob = new TargetMob.default();
   private matchedBuffsCache = new Map<string, BuffCacheEntry>();
 
 
@@ -40,7 +42,7 @@ export class BuffManager {
       if (buffsAndDebuffs.length > 0) {
         // Track which buffs are currently active
         const currentActiveBuffs = new Set<string>();
-        const registeredBuffs = BuffImageRegistry.buffData;
+        const registeredBuffs = BuffImageRegistry.buffData.filter((buff) => !buff.isTarget);
 
         for (const activeBuff of buffsAndDebuffs) {
           for (const buffData of registeredBuffs) {
@@ -169,6 +171,47 @@ export class BuffManager {
     }
 
     return [];
+  }
+
+  getTargetDebuffs(trackedTargetDebuffs: Record<string, boolean>) {
+    const hasTarget = this.targetMob.read();
+
+    if (!hasTarget) {
+      return [];
+    }
+
+    const targetPos = this.targetMob.lastpos;
+    if (!targetPos) {
+      return [];
+    }
+
+    const targetLocation = {
+      x: targetPos.x - 120,
+      y: targetPos.y + 20,
+      w: 150,
+      h: 60,
+    };
+
+    const capturedArea = a1lib.captureHold(
+      targetLocation.x,
+      targetLocation.y,
+      targetLocation.w,
+      targetLocation.h
+    );
+
+    const targetDebuffsData = BuffImageRegistry.buffData.filter(buff =>
+      buff.isTarget &&
+      trackedTargetDebuffs[buff.name.charAt(0).toLowerCase() + buff.name.slice(1).replace(/\s+/g, '')]
+    );
+
+    return targetDebuffsData.map(debuff => {
+      const isPresent = debuff.image ? capturedArea.findSubimage(debuff.image).length > 0 : false;
+      return {
+        ...debuff,
+        // Use abilityCooldown as a flag: 1 if active, 0 if not
+        abilityCooldown: isPresent ? 1 : 0
+      };
+    });
   }
 
   private updateCooldowns = (): void => {

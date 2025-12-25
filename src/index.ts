@@ -31,10 +31,12 @@ if (window.alt1) {
 
 Alpine.data('buffsData', () => ({
   buffs: [],
+  targetDebuffs: [],
   draggedIndex: null as number | null,
   isDragging: false,
   resetInprogress: false,
   alertedBuffs: new Set<string>(),
+  alertedDebuffs: new Set<string>(),
   abilityCooldownAlertedBuffs: new Set<string>(),
   clockTickingAudio: new Audio(clockTicking),
   popAlertAudio: new Audio(cooldownAlert),
@@ -44,12 +46,24 @@ Alpine.data('buffsData', () => ({
   overlaySettings: {
     scale: 1,
     buffDurationAlertThreshold: 30,
-    abilityCooldownAlertThreshold: 5
+    abilityCooldownAlertThreshold: 5,
+    trackedTargetDebuffs: {
+      vulnerability: false,
+      deathMark: false,
+      bloat: false
+    },
+    targetDebuffAudioAlert: true
   },
   overlaySettingsForm: {
     scale: 1,
     buffDurationAlertThreshold: 30,
-    abilityCooldownAlertThreshold: 5
+    abilityCooldownAlertThreshold: 5,
+    trackedTargetDebuffs: {
+      vulnerability: false,
+      deathMark: false,
+      bloat: false
+    },
+    targetDebuffAudioAlert: true
   },
 
   formatTime(seconds: number): string {
@@ -139,6 +153,8 @@ Alpine.data('buffsData', () => ({
     this.overlaySettings.scale = Math.max(1, Math.min(3, this.overlaySettingsForm.scale));
     this.overlaySettings.buffDurationAlertThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.buffDurationAlertThreshold));
     this.overlaySettings.abilityCooldownAlertThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.abilityCooldownAlertThreshold));
+    this.overlaySettings.trackedTargetDebuffs = { ...this.overlaySettingsForm.trackedTargetDebuffs };
+    this.overlaySettings.targetDebuffAudioAlert = this.overlaySettingsForm.targetDebuffAudioAlert;
 
     // Update form with clamped values
     this.overlaySettingsForm.scale = this.overlaySettings.scale;
@@ -154,13 +170,25 @@ Alpine.data('buffsData', () => ({
       this.overlaySettings = {
         scale: saved.scale ?? 1,
         buffDurationAlertThreshold: saved.buffDurationAlertThreshold ?? 30,
-        abilityCooldownAlertThreshold: saved.abilityCooldownAlertThreshold ?? 5
+        abilityCooldownAlertThreshold: saved.abilityCooldownAlertThreshold ?? 5,
+        trackedTargetDebuffs: saved.trackedTargetDebuffs ?? {
+          vulnerability: false,
+          deathMark: false,
+          bloat: false
+        },
+        targetDebuffAudioAlert: saved.targetDebuffAudioAlert ?? true
       };
     } else {
       this.overlaySettings = {
         scale: 1,
         buffDurationAlertThreshold: 30,
-        abilityCooldownAlertThreshold: 5
+        abilityCooldownAlertThreshold: 5,
+        trackedTargetDebuffs: {
+          vulnerability: false,
+          deathMark: false,
+          bloat: false
+        },
+        targetDebuffAudioAlert: true
       };
       storage.save('overlaySettings', this.overlaySettings);
     }
@@ -216,7 +244,7 @@ Alpine.data('buffsData', () => ({
     }
   },
   hasAlertedBuffs() {
-    return this.buffs.some(buff => this.isAlerted(buff.name));
+    return this.buffs.some(buff => this.isAlerted(buff.name)) || this.targetDebuffs.length > 0;
   },
 
   isLowBuffDuration(buff) {
@@ -264,6 +292,18 @@ Alpine.data('buffsData', () => ({
         this.abilityCooldownAlertedBuffs.delete(buff.name);
       }
     });
+
+    this.targetDebuffs.forEach(debuff => {
+      if (!this.alertedDebuffs.has(debuff.name) && debuff.abilityCooldown === 0 && this.overlaySettings.targetDebuffAudioAlert) {
+        this.popAlertAudio.currentTime = 0;
+        this.popAlertAudio.play().catch(err => console.log('Audio play failed:', err));
+        // Mark this debuff as alerted
+        this.alertedDebuffs.add(debuff.name);
+      } else if (this.alertedDebuffs.has(debuff.name) && debuff.abilityCooldown === 1) {
+        // Remove from alerted set when debuff is no longer flashing
+        this.alertedDebuffs.delete(debuff.name);
+      }
+    });
   },
 
   isAlerted(buffName: string) {
@@ -281,6 +321,14 @@ Alpine.data('buffsData', () => ({
         const existingBuffs = await buffManager.getActiveBuffs();
         if (existingBuffs) {
           this.buffs = existingBuffs.map(b => ({ ...b }));
+        }
+
+        const existingTargetDebuffs = await buffManager.getTargetDebuffs(this.overlaySettings.trackedTargetDebuffs);
+        if (existingTargetDebuffs) {
+          this.targetDebuffs = existingTargetDebuffs.map(b => ({ ...b }));;
+        }
+
+        if (existingBuffs || existingTargetDebuffs) {
           this.checkAndPlayAlerts();
         }
 

@@ -454,6 +454,10 @@ h2 {
   height: 48px;
 }
 
+.stat-icon.cooldown.disabled {
+  filter: grayscale(100%);
+}
+
 .stat-icon.large .buff-icon-img {
   height: 48px;
 }

@@ -1,8 +1,8 @@
 import Alpine from 'alpinejs';
 import * as a1lib from 'alt1';
 import "./appconfig.json";
+import clockTicking from './audio/clock-ticking.mp3';
 import cooldownAlert from './audio/long-pop-alert.wav';
-import buffCoolDownAlert from './audio/pop-alert.mp3';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { BuffManager } from './BuffManager';
 import "./icon.png";
@@ -36,8 +36,8 @@ Alpine.data('buffsData', () => ({
   resetInprogress: false,
   alertedBuffs: new Set<string>(),
   lowCooldownAlertedBuffs: new Set<string>(),
-  audio: new Audio(buffCoolDownAlert),
-  longAudio: new Audio(cooldownAlert),
+  clockTickingAudio: new Audio(clockTicking),
+  popAlertAudio: new Audio(cooldownAlert),
   activeTab: 'buffs',
   timestamp: null,
   lastUpdate: Date.now(),
@@ -236,8 +236,11 @@ Alpine.data('buffsData', () => ({
       if (isLowBuffCooldown && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
         // Play alert sound
         if (buff.isAudioQueued) {
-          this.audio.currentTime = 0;
-          this.audio.play().catch(err => console.log('Audio play failed:', err));
+          this.clockTickingAudio.currentTime = 0;
+          this.clockTickingAudio.play().catch(err => console.log('Audio play failed:', err));
+          setTimeout(() => {
+            this.clockTickingAudio.pause();
+          }, buff.buffCooldown * 1000);
         }
         // Mark this buff as alerted
         this.alertedBuffs.add(buff.name);
@@ -250,8 +253,8 @@ Alpine.data('buffsData', () => ({
       if (isLowCooldown && buff.isPinned && !this.lowCooldownAlertedBuffs.has(buff.name)) {
         // Play long alert sound
         if (buff.isAudioQueued) {
-          this.longAudio.currentTime = 0;
-          this.longAudio.play().catch(err => console.log('Long audio play failed:', err));
+          this.popAlertAudio.currentTime = 0;
+          this.popAlertAudio.play().catch(err => console.log('Audio play failed:', err));
         }
         // Mark this buff as alerted
         this.lowCooldownAlertedBuffs.add(buff.name);

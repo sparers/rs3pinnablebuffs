@@ -128,7 +128,7 @@ Alpine.data('buffsData', () => ({
   },
 
   isLowCooldown(buff) {
-    const isLowCooldown = buff.cooldown <= 5;
+    const isLowCooldown = buff.cooldown <= 5 && buff.cooldown > 0;
     return isLowCooldown;
   },
 

@@ -288,7 +288,7 @@ export class BuffManager {
       const dataUrl = await htmlToImage.toCanvas(element, {
         width: parseInt(style.width) || 1,
         height: parseInt(style.height) || 1,
-        backgroundColor: 'transparent',
+        backgroundColor: '#000000',
         quality: 1,
         pixelRatio: 1.5,
         skipAutoScale: false,

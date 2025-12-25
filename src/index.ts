@@ -78,8 +78,60 @@ Alpine.data('buffsData', () => ({
     buffManager.toggleBuffAudioQueue(buffName);
   },
 
-  setOverlayPosition(group: string) {
-    buffManager.setOverlayPosition(group);
+  async setOverlayPosition(group: string) {
+    // Start tracking mouse with placeholder
+    const intervalId = this.startPositionTracking(group);
+
+    buffManager.setOverlayPosition(group, () => {
+      // Stop tracking and clear placeholder when position is saved
+      this.stopPositionTracking(group, intervalId);
+    });
+  },
+
+
+  startPositionTracking(group: string): number {
+    const placeholderGroup = `${group}-placeholder`;
+    const mousePos = a1lib.getMousePosition();
+    // Draw placeholder at mouse position every 100ms
+    const intervalId = window.setInterval(() => {
+      const mousePos = a1lib.getMousePosition();
+
+      var groupName = '';
+
+      if (group === 'buffsOverlayGroup') {
+        groupName = 'Buff/Debuffs';
+      } else if (group === 'centerOverlayGroup') {
+        groupName = 'Alerts';
+      }
+
+      // Clear previous placeholder
+      alt1.overLayClearGroup(placeholderGroup);
+      alt1.overLaySetGroup(placeholderGroup);
+
+      // Draw text overlay centered inside the rectangle
+      alt1.overLayTextEx(
+        'Press Alt+1 to set the ' + groupName + ' group position.',
+        a1lib.mixColor(255, 255, 255),
+        18,
+        mousePos.x,
+        mousePos.y,
+        9999,
+        '',
+        true,
+        true
+      );
+    }, 100);
+
+    return intervalId;
+  },
+
+  stopPositionTracking(group: string, intervalId: number) {
+    // Stop the interval
+    window.clearInterval(intervalId);
+
+    // Clear the placeholder overlay
+    const placeholderGroup = `${group}-placeholder`;
+    alt1.overLayClearGroup(placeholderGroup);
   },
 
   saveOverlaySettings() {

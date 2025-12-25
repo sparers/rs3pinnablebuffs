@@ -261,8 +261,8 @@ export class BuffManager {
     return false;
   };
 
-  public setOverlayPosition = (overlayPositionKey: string): void => {
-    alt1.setTooltip('Press Alt+1 to save position');
+  public setOverlayPosition = (overlayPositionKey: string, onPositionSaved?: () => void): void => {
+    //alt1.setTooltip('Press Alt+1 to save position');
     a1lib.once('alt1pressed', () => {
       try {
         const mousePos = a1lib.getMousePosition();
@@ -271,6 +271,11 @@ export class BuffManager {
           y: Math.floor(mousePos.y),
         });
         alt1.clearTooltip();
+
+        // Call the callback if provided
+        if (onPositionSaved) {
+          onPositionSaved();
+        }
       } catch (error) {
         console.error(error);
       }

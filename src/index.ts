@@ -35,7 +35,7 @@ Alpine.data('buffsData', () => ({
   isDragging: false,
   resetInprogress: false,
   alertedBuffs: new Set<string>(),
-  lowCooldownAlertedBuffs: new Set<string>(),
+  abilityCooldownAlertedBuffs: new Set<string>(),
   clockTickingAudio: new Audio(clockTicking),
   popAlertAudio: new Audio(cooldownAlert),
   activeTab: 'buffs',
@@ -43,13 +43,13 @@ Alpine.data('buffsData', () => ({
   lastUpdate: Date.now(),
   overlaySettings: {
     scale: 1,
-    buffCooldownThreshold: 30,
-    abilityCooldownThreshold: 5
+    buffDurationAlertThreshold: 30,
+    abilityCooldownAlertThreshold: 5
   },
   overlaySettingsForm: {
     scale: 1,
-    buffCooldownThreshold: 30,
-    abilityCooldownThreshold: 5
+    buffDurationAlertThreshold: 30,
+    abilityCooldownAlertThreshold: 5
   },
 
   formatTime(seconds: number): string {
@@ -137,13 +137,13 @@ Alpine.data('buffsData', () => ({
   saveOverlaySettings() {
     // Validate and copy form values to actual settings
     this.overlaySettings.scale = Math.max(1, Math.min(3, this.overlaySettingsForm.scale));
-    this.overlaySettings.buffCooldownThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.buffCooldownThreshold));
-    this.overlaySettings.abilityCooldownThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.abilityCooldownThreshold));
+    this.overlaySettings.buffDurationAlertThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.buffDurationAlertThreshold));
+    this.overlaySettings.abilityCooldownAlertThreshold = Math.max(1, Math.min(60, this.overlaySettingsForm.abilityCooldownAlertThreshold));
 
     // Update form with clamped values
     this.overlaySettingsForm.scale = this.overlaySettings.scale;
-    this.overlaySettingsForm.buffCooldownThreshold = this.overlaySettings.buffCooldownThreshold;
-    this.overlaySettingsForm.abilityCooldownThreshold = this.overlaySettings.abilityCooldownThreshold;
+    this.overlaySettingsForm.buffDurationAlertThreshold = this.overlaySettings.buffDurationAlertThreshold;
+    this.overlaySettingsForm.abilityCooldownAlertThreshold = this.overlaySettings.abilityCooldownAlertThreshold;
 
     storage.save('overlaySettings', this.overlaySettings);
   },
@@ -153,14 +153,14 @@ Alpine.data('buffsData', () => ({
     if (saved) {
       this.overlaySettings = {
         scale: saved.scale ?? 1,
-        buffCooldownThreshold: saved.buffCooldownThreshold ?? 30,
-        abilityCooldownThreshold: saved.abilityCooldownThreshold ?? 5
+        buffDurationAlertThreshold: saved.buffDurationAlertThreshold ?? 30,
+        abilityCooldownAlertThreshold: saved.abilityCooldownAlertThreshold ?? 5
       };
     } else {
       this.overlaySettings = {
         scale: 1,
-        buffCooldownThreshold: 30,
-        abilityCooldownThreshold: 5
+        buffDurationAlertThreshold: 30,
+        abilityCooldownAlertThreshold: 5
       };
       storage.save('overlaySettings', this.overlaySettings);
     }
@@ -219,56 +219,56 @@ Alpine.data('buffsData', () => ({
     return this.buffs.some(buff => this.isAlerted(buff.name));
   },
 
-  isLowBuffCooldown(buff) {
-    const isLowBuffCooldown = buff.progress <= this.overlaySettings.buffCooldownThreshold && buff.buffCooldown > 0 && buff.buffCooldown <= 60;
-    return isLowBuffCooldown;
+  isLowBuffDuration(buff) {
+    const isLowBuffDuration = buff.buffProgress <= this.overlaySettings.buffDurationAlertThreshold && buff.buffDuration > 0 && buff.buffDuration <= 60;
+    return isLowBuffDuration;
   },
 
-  isLowCooldown(buff) {
-    const isLowCooldown = buff.cooldown <= this.overlaySettings.abilityCooldownThreshold && buff.cooldown > 0;
-    return isLowCooldown;
+  isLowAbilityCooldown(buff) {
+    const isLowAbilityCooldown = buff.abilityCooldown <= this.overlaySettings.abilityCooldownAlertThreshold && buff.abilityCooldown > 0;
+    return isLowAbilityCooldown;
   },
 
   checkAndPlayAlerts() {
     this.buffs.forEach(buff => {
-      const isLowBuffCooldown = this.isLowBuffCooldown(buff);
+      const isLowBuffDuration = this.isLowBuffDuration(buff);
 
-      if (isLowBuffCooldown && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
+      if (isLowBuffDuration && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
         // Play alert sound
         if (buff.isAudioQueued) {
           this.clockTickingAudio.currentTime = 0;
           this.clockTickingAudio.play().catch(err => console.log('Audio play failed:', err));
           setTimeout(() => {
             this.clockTickingAudio.pause();
-          }, buff.buffCooldown * 1000);
+          }, buff.buffDuration * 1000);
         }
         // Mark this buff as alerted
         this.alertedBuffs.add(buff.name);
-      } else if (!isLowBuffCooldown && this.alertedBuffs.has(buff.name)) {
+      } else if (!isLowBuffDuration && this.alertedBuffs.has(buff.name)) {
         // Remove from alerted set when buff is no longer flashing
         this.alertedBuffs.delete(buff.name);
       }
 
-      const isLowCooldown = this.isLowCooldown(buff);
-      if (isLowCooldown && buff.isPinned && !this.lowCooldownAlertedBuffs.has(buff.name)) {
+      const isLowAbilityCooldown = this.isLowAbilityCooldown(buff);
+      if (isLowAbilityCooldown && buff.isPinned && !this.abilityCooldownAlertedBuffs.has(buff.name)) {
         // Play long alert sound
         if (buff.isAudioQueued) {
           this.popAlertAudio.currentTime = 0;
           this.popAlertAudio.play().catch(err => console.log('Audio play failed:', err));
         }
         // Mark this buff as alerted
-        this.lowCooldownAlertedBuffs.add(buff.name);
-      } else if (!isLowCooldown && this.lowCooldownAlertedBuffs.has(buff.name)) {
-        this.lowCooldownAlertedBuffs.delete(buff.name);
+        this.abilityCooldownAlertedBuffs.add(buff.name);
+      } else if (!isLowAbilityCooldown && this.abilityCooldownAlertedBuffs.has(buff.name)) {
+        this.abilityCooldownAlertedBuffs.delete(buff.name);
       }
     });
   },
 
   isAlerted(buffName: string) {
     const buff = this.buffs.find(b => b.name === buffName);
-    console.log(buffName, buff.cooldown);
+    console.log(buffName, buff.abilityCooldown);
     if (!buff) return false;
-    return this.lowCooldownAlertedBuffs.has(buffName) && buff.cooldown > 0;
+    return this.abilityCooldownAlertedBuffs.has(buffName) && buff.abilityCooldown > 0;
   },
 
   async init() {

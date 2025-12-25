@@ -6,23 +6,23 @@ export interface BuffData {
     threshold: number;
     path: string;
     debug?: boolean;
-    cooldown: number;
-    hasCooldown: boolean;
+    abilityCooldown: number;
+    hasAbilityCooldown: boolean;
 }
 
 export interface BuffCacheEntry {
     name: string;
     imagePath: string;
-    buffCooldown: number;
+    buffDuration: number;
     lastUpdate: number;
-    progress: number;
-    initialBuffCooldown: number;
+    buffProgress: number;
+    buffDurationMax: number;
     isPinned: boolean;
     isAudioQueued: boolean;
-    cooldown: number;
-    cooldownProgress: number;
-    initialiCooldown: number;
-    hasCooldown: boolean;
+    abilityCooldown: number;
+    abilityCooldownProgress: number;
+    abilityCooldownMax: number;
+    hasAbilityCooldown: boolean;
     order: number;
 }
 
@@ -32,10 +32,10 @@ export interface PersistedBuff {
     isAudioQueued: boolean;
     order?: number;
     imagePath?: string;
-    cooldown?: number;
-    cooldownProgress?: number;
-    initialiCooldown?: number;
-    hasCooldown: boolean
+    abilityCooldown?: number;
+    abilityCooldownProgress?: number;
+    abilityCooldownMax?: number;
+    hasAbilityCooldown: boolean
 }
 
 export interface OverlayPosition {
@@ -45,8 +45,8 @@ export interface OverlayPosition {
 
 export interface OverlaySettings {
     scale: number;
-    buffCooldownThreshold: number;
-    abilityCooldownThreshold: number;
+    buffDurationAlertThreshold: number;
+    abilityCooldownAlertThreshold: number;
 }
 
 export type ImageCollection = Record<string, ImgRef>;

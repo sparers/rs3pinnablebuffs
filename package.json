@@ -6,9 +6,8 @@
 	},
 	"dependencies": {
 		"alpinejs": "^3.15.3",
-		"alt1": "^0.0.1",
-		"html-to-image": "^1.11.11",
-		"text-to-speech-js": "^1.1.11"
+		"alt1": "^0.1.1",
+		"html-to-image": "^1.11.11"
 	},
 	"devDependencies": {
 		"@types/alpinejs": "^3.13.11",
@@ -18,7 +17,7 @@
 		"dom-to-image": "^2.6.0",
 		"http-server": "^14.1.1",
 		"rimraf": "^6.1.2",
-		"sharp": "^0.31.3",
+		"sharp": "^0.34.5",
 		"style-loader": "^4.0.0",
 		"ts-loader": "^9.3.1",
 		"typescript": "^5.1.3",

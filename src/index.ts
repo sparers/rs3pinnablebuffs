@@ -222,8 +222,9 @@ async function captureElementAsOverlay(elementId: string, overlayGroup: string) 
 function stripAlpine(html: string): string {
   return html
     .replace(/<template[^>]*>[\s\S]*?<\/template>/gi, '')
+    .replace(/<([a-z0-9]+)[^>]*class="[^"]*buttons-container[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, '')
+
     .replace(/\s+(x-[a-z:-]+|:[a-z-]+|@[a-z.-]+)(="[^"]*")?/gi, '')
-    .replace(/\s+class="settings-section"/gi, '');
 }
 
 async function start() {

@@ -1,7 +1,8 @@
 import Alpine from 'alpinejs';
 import * as alt1 from 'alt1';
 import "./appconfig.json";
-import alertSound from './audio/pop-alert.mp3';
+import cooldownAlert from './audio/long-pop-alert.wav';
+import buffCoolDownAlert from './audio/pop-alert.mp3';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { BuffManager } from './BuffManager';
 import "./icon.png";
@@ -30,7 +31,9 @@ Alpine.data('buffsData', () => ({
   draggedIndex: null as number | null,
   isDragging: false,
   alertedBuffs: new Set<string>(),
-  audio: new Audio(alertSound),
+  lowCooldownAlertedBuffs: new Set<string>(),
+  audio: new Audio(buffCoolDownAlert),
+  longAudio: new Audio(cooldownAlert),
   activeTab: 'buffs',
   timestamp: null,
   lastUpdate: Date.now(),
@@ -114,17 +117,28 @@ Alpine.data('buffsData', () => ({
 
   checkAndPlayAlerts() {
     this.buffs.forEach(buff => {
-      const isFlashing = buff.progress <= 30 && buff.buffCooldown > 0 && buff.buffCooldown <= 60;
+      const isLowBuffCooldown = buff.progress <= 30 && buff.buffCooldown > 0 && buff.buffCooldown <= 60;
 
-      if (isFlashing && buff.isAudioQueued && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
+      if (isLowBuffCooldown && buff.isAudioQueued && buff.isPinned && !this.alertedBuffs.has(buff.name)) {
         // Play alert sound
         this.audio.currentTime = 0;
         this.audio.play().catch(err => console.log('Audio play failed:', err));
         // Mark this buff as alerted
         this.alertedBuffs.add(buff.name);
-      } else if (!isFlashing && this.alertedBuffs.has(buff.name)) {
+      } else if (!isLowBuffCooldown && this.alertedBuffs.has(buff.name)) {
         // Remove from alerted set when buff is no longer flashing
         this.alertedBuffs.delete(buff.name);
+      }
+
+      const isLowCooldown = buff.cooldown > 0 && buff.cooldown <= 5;
+      if (isLowCooldown && buff.isAudioQueued && buff.isPinned && !this.lowCooldownAlertedBuffs.has(buff.name)) {
+        // Play long alert sound
+        this.longAudio.currentTime = 0;
+        this.longAudio.play().catch(err => console.log('Long audio play failed:', err));
+        // Mark this buff as alerted
+        this.lowCooldownAlertedBuffs.add(buff.name);
+      } else if (!isLowCooldown && this.lowCooldownAlertedBuffs.has(buff.name)) {
+        this.lowCooldownAlertedBuffs.delete(buff.name);
       }
     });
   },

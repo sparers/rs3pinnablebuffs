@@ -61,7 +61,7 @@
                 <div class="tracks-container">
                   <div
                     class="buff-bar-track cooldown"
-                    :class="{'disabled': buff.cooldown === 0, 'flashing': buff.cooldownProgress <= 10 && buff.buffCooldown === 0 && buff.cooldown <= 5 }"
+                    :class="{'disabled': buff.cooldown === 0, 'flashing': buff.cooldown <= 5 }"
                     x-show="buff.hasCooldown"
                   >
                     <div class="bar-fill cooldown-fill" :style="{ width: buff.cooldownProgress + '%' }"></div>

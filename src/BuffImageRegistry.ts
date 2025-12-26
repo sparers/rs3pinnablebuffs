@@ -137,7 +137,7 @@ export class BuffImageRegistry {
       },
       {
         name: "Necrosis", image: this.Buffs.necrosis, threshold: 150, path: './imgs/icons/necrosis.png',
-        isStack: true, debug: true
+        isStack: true
       },
       {
         name: "Residual Soul", image: this.Buffs.residualSoul, threshold: 400, path: './imgs/icons/residual_soul.png',

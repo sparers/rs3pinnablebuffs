@@ -332,7 +332,7 @@ Alpine.data('buffsData', () => ({
       } else if (!isLowBuffDuration && this.alertedBuffs.has(buff.name)) {
         // Remove from alerted set when buff is no longer flashing
         this.alertedBuffs.delete(buff.name);
-        this.clockTickingAudio.stop();
+        this.clockTickingAudio.pause();
       }
 
       const isLowAbilityCooldown = this.isLowAbilityCooldown(buff);

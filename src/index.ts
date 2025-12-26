@@ -44,6 +44,10 @@ Alpine.data('buffsData', () => ({
   activeTab: 'buffs',
   timestamp: null,
   lastUpdate: Date.now(),
+  isOverlayPositionSet: {
+    buffs: false,
+    alerts: false
+  },
   overlaySettings: {
     scale: 1,
     buffDurationAlertThreshold: 10,
@@ -102,6 +106,7 @@ Alpine.data('buffsData', () => ({
     buffManager.setOverlayPosition(group, () => {
       // Stop tracking and clear placeholder when position is saved
       this.stopPositionTracking(group, intervalId);
+      this.checkOverlayPositions();
     });
   },
 
@@ -208,6 +213,11 @@ Alpine.data('buffsData', () => ({
     this.alertedBuffs.clear();
     location.reload();
     this.resetInprogress = false;
+  },
+
+  checkOverlayPositions() {
+    this.isOverlayPositionSet.buffs = !!storage.get(BUFFS_OVERLAY_GROUP);
+    this.isOverlayPositionSet.alerts = !!storage.get(CENTER_OVERLAY_GROUP);
   },
 
   onDragStart(event: DragEvent, index: number) {
@@ -328,6 +338,7 @@ Alpine.data('buffsData', () => ({
 
   async init() {
     this.loadOverlaySettings();
+    this.checkOverlayPositions();
     const updateLoop = async () => {
       // Skip update if user is dragging buffs
       if (!this.isDragging && !this.resetInprogress) {

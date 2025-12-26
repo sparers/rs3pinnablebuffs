@@ -349,7 +349,6 @@ export class BuffManager {
           x: Math.floor(mousePos.x),
           y: Math.floor(mousePos.y),
         });
-        alt1.clearTooltip();
 
         // Call the callback if provided
         if (onPositionSaved) {

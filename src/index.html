@@ -33,16 +33,30 @@
       </div>
 
       <div class="tab-content" x-show="activeTab === 'buffs'">
+        <div class="overlay-warning" x-show="!isOverlayPositionSet.buffs || !isOverlayPositionSet.alerts">
+          <svg viewBox="0 0 24 24" class="warning-icon" fill="currentColor">
+            <path d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,10V14H13V10H11M11,16V18H13V16H11Z" />
+          </svg>
+          <div class="warning-text">
+            <template x-if="!isOverlayPositionSet.buffs">
+              <p>Overlay position for <strong>Buffs</strong> is not set.</p>
+            </template>
+            <template x-if="!isOverlayPositionSet.alerts">
+              <p>Overlay position for <strong>Alerts</strong> is not set.</p>
+            </template>
+            <p>Go to the <strong>Settings</strong> tab to set them.</p>
+          </div>
+        </div>
         <div>
-          <div x-show="buffs.length === 0" class="empty-placeholder">
-            <svg viewBox="0 0 24 24" class="placeholder-icon" fill="currentColor">
-              <path
-                d="M12,2A7,7 0 0,1 19,9C19,11.38 17.81,13.47 16,14.74V17A1,1 0 0,1 15,18H9A1,1 0 0,1 8,17V14.74C6.19,13.47 5,11.38 5,9A7,7 0 0,1 12,2M9,21V20H15V21A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21M12,4A5,5 0 0,0 7,9C7,11.05 8.23,12.81 10,13.58V16H14V13.58C15.77,12.81 17,11.05 17,9A5,5 0 0,0 12,4Z"
-              />
-            </svg>
-            <h3>No Buffs Tracked</h3>
+          <div class="overlay-warning" x-show="buffs.length === 0">
+          <svg viewBox="0 0 24 24" class="warning-icon" fill="currentColor">
+            <path d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,10V14H13V10H11M11,16V18H13V16H11Z"></path>
+          </svg>
+          <div class="warning-text">
             <p>Active buffs will appear here once detected in-game.</p>
           </div>
+        </div>
+
           <div class="settings-section" x-show="buffs.length > 0" id="buffs-output">
             <template x-for="(buff, index) in buffs" :key="buff.name">
               <div

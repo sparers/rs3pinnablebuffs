@@ -137,7 +137,7 @@ export class BuffImageRegistry {
       },
       {
         name: "Necrosis", image: this.Buffs.necrosis, threshold: 150, path: './imgs/icons/necrosis.png',
-        isStack: true
+        isStack: true, debug: true
       },
       {
         name: "Residual Soul", image: this.Buffs.residualSoul, threshold: 400, path: './imgs/icons/residual_soul.png',
@@ -150,7 +150,7 @@ export class BuffImageRegistry {
         name: "Bonfire Boost", image: this.Buffs.bonfireBoost, threshold: 400, path: './imgs/icons/bonfire.png',
       },
       {
-        name: "Grimoire", image: this.Buffs.grimoire, threshold: 350, path: "./imgs/icons/grimoire.png", debug: true
+        name: "Grimoire", image: this.Buffs.grimoire, threshold: 350, path: "./imgs/icons/grimoire.png"
       },
       {
         name: "Lantadyme Incense", image: this.Incense.lantadyme, threshold: 119, path: './imgs/icons/lantadyme_incense_sticks.png',
@@ -310,7 +310,7 @@ export class BuffImageRegistry {
         name: "Cannon Decay", image: this.Debuffs.cannon, threshold: 120, path: './imgs/icons/cannon.png',
       },
       {
-        name: "Familiar", image: this.Buffs.familiar, threshold: 160, path: './imgs/icons/familiar.png',
+        name: "Familiar", image: this.Buffs.familiar, threshold: 300, path: './imgs/icons/familiar.png'
       },
 
 

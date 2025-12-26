@@ -221,7 +221,7 @@ export class BuffManager {
         );
 
         if (buffData.debug) {
-          console.log(buffData.name)
+          console.debug(`match: ${buffData.name}:${buffData.threshold} -> passed: ${matchResult.passed}`);
         }
 
         if (matchResult.passed >= buffData.threshold) {

@@ -178,6 +178,15 @@ p.version {
   overflow: hidden;
 }
 
+.settings-section ul {
+  margin-bottom: 20px;
+}
+
+.settings-section li img {
+  margin: 10px 0;
+  width: 300px;
+}
+
 .settings-section.cooldowns {
   padding-top: 2px;
 }

@@ -4,16 +4,16 @@ import * as TargetMob from 'alt1/targetmob';
 import * as htmlToImage from 'html-to-image';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { LocalStorageHelper } from './LocalStorageHelper';
-import type { BuffCacheEntry, OverlayPosition, PersistedBuff } from './types';
+import type { BuffCacheEntry, BuffData, OverlayPosition, PersistedBuff } from './types';
+
+type Alt1Buff = NonNullable<ReturnType<BuffReader.default['read']>>[number];
 
 export class BuffManager {
   private readonly buffs: BuffReader.default;
   private readonly debuffs: BuffReader.default;
   private readonly storage: LocalStorageHelper;
   private readonly targetMob = new TargetMob.default();
-  private matchedBuffsCache = new Map<string, BuffCacheEntry>();
-
-
+  private readonly matchedBuffsCache = new Map<string, BuffCacheEntry>();
   private readonly TRACKED_BUFFS_KEY = 'trackedBuffs';
 
   constructor(storage: LocalStorageHelper) {
@@ -25,168 +25,33 @@ export class BuffManager {
   }
 
   public getActiveBuffs = async (): Promise<BuffCacheEntry[]> => {
-    if (!this.buffs.pos) {
-      this.findBuffsAndDebuffs(this.buffs);
+    this.ensureReaderPosition(this.buffs);
+    this.ensureReaderPosition(this.debuffs);
+
+    if (!this.buffs.pos && !this.debuffs.pos) {
+      return [];
     }
-    if (!this.debuffs.pos) {
-      this.findBuffsAndDebuffs(this.debuffs);
-    }
-    if (this.buffs.pos || this.debuffs.pos) {
-      // First, update cooldowns for all cached buffs
-      this.updateCooldowns();
 
-      const activeBuffs = this.buffs.pos ? this.buffs.read() || [] : [];
-      const activeDebuffs = this.debuffs.pos ? this.debuffs.read() || [] : [];
-      const buffsAndDebuffs = [...activeBuffs, ...activeDebuffs];
+    this.updateCooldowns();
 
-      if (buffsAndDebuffs.length > 0) {
-        // Track which buffs are currently active
-        const currentActiveBuffs = new Set<string>();
-        const registeredBuffs = BuffImageRegistry.buffData.filter((buff) => !buff.isTarget);
-
-        for (const activeBuff of buffsAndDebuffs) {
-          for (const buffData of registeredBuffs) {
-            if (buffData.image == null) continue;
-            const matchResult = activeBuff.countMatch(buffData.image, buffData.useAggressiveSearh || false);
-            if (buffData.debug) {
-              //console.debug(`debug: before check ${buffData.name}:${buffData.threshold} -> passed: ${matchResult.passed}`);
-            }
-
-            if (matchResult.passed >= buffData.threshold) {
-              const time = activeBuff.readTime();
-              const buffText = activeBuff.readArg('arg').arg || '';
-              if (buffData.debug) {
-                console.debug(`match: ${buffData.name}:${buffData.threshold} -> passed: ${matchResult.passed}`);
-                console.debug(`debug: ${buffData.name} -> arg: ${buffText}`);
-              }
-
-              currentActiveBuffs.add(buffData.name);
-
-              const existingBuff = this.matchedBuffsCache.get(buffData.name);
-
-              // Determine duration and progress based on buff duration
-              let newBuffDuration: number;
-              let newText: string;
-              let newBuffProgress: number;
-              let newBuffDurationMax: number;
-
-              if (buffText.length <= 59) {
-                // For short buffs, always use game's duration
-                newBuffDuration = time;
-                newText = buffText;
-                newBuffDurationMax = existingBuff?.buffDurationMax || time;
-                newBuffProgress = newBuffDurationMax > 0 ? (time / newBuffDurationMax) * 100 : 0;
-              } else if (!existingBuff || time > existingBuff.buffDuration) {
-                // For long buffs, only reset if new or duration increased
-                newBuffDuration = time;
-                newText = buffText;
-                newBuffDurationMax = time;
-                newBuffProgress = 100;
-
-              } else {
-                // Keep existing values and let updateCooldowns() tick them down
-                newBuffDuration = existingBuff.buffDuration;
-                newText = existingBuff.text;
-                newBuffDurationMax = existingBuff.buffDurationMax;
-                newBuffProgress = existingBuff.buffProgress;
-              }
-
-              // Handle ability cooldown
-              let abilityCooldown: number;
-              let abilityCooldownMax: number;
-              let abilityCooldownProgress: number;
-
-              if (!existingBuff) {
-                // Brand new buff - start cooldown immediately
-                abilityCooldown = buffData.abilityCooldown;
-                abilityCooldownMax = buffData.abilityCooldown;
-                abilityCooldownProgress = 100;
-              } else if (newBuffProgress === 100 && existingBuff.buffProgress < 100 && buffData.hasAbilityCooldown) {
-                // Buff was refreshed (e.g. ability reused or cooldown reset mechanic)
-                abilityCooldown = buffData.abilityCooldown;
-                abilityCooldownMax = buffData.abilityCooldown;
-                abilityCooldownProgress = 100;
-              } else if (existingBuff.buffDuration === 0 && buffData.hasAbilityCooldown) {
-                // Buff reactivated after expiring - start cooldown fresh if cooldown finished or was never started
-                if (existingBuff.abilityCooldown === 0 || existingBuff.abilityCooldownMax === 0) {
-                  abilityCooldown = buffData.abilityCooldown;
-                  abilityCooldownMax = buffData.abilityCooldown;
-                  abilityCooldownProgress = 100;
-                } else {
-                  // Cooldown still ticking, keep it
-                  abilityCooldown = existingBuff.abilityCooldown;
-                  abilityCooldownMax = existingBuff.abilityCooldownMax;
-                  abilityCooldownProgress = existingBuff.abilityCooldownProgress;
-                }
-              } else {
-                // Buff still active - keep existing cooldown state
-                abilityCooldown = existingBuff.abilityCooldown;
-                abilityCooldownMax = existingBuff.abilityCooldownMax;
-                abilityCooldownProgress = existingBuff.abilityCooldownProgress;
-              }
-
-              this.matchedBuffsCache.set(buffData.name, {
-                name: buffData.name,
-                imagePath: buffData.path,
-                buffDuration: newBuffDuration,
-                lastUpdate: existingBuff?.lastUpdate || Date.now(),
-                buffProgress: newBuffProgress,
-                buffDurationMax: newBuffDurationMax,
-                isPinned: existingBuff?.isPinned || false,
-                isAudioQueued: existingBuff?.isAudioQueued || false,
-                order: existingBuff?.order ?? 999,
-                abilityCooldown: abilityCooldown,
-                abilityCooldownProgress: abilityCooldownProgress,
-                abilityCooldownMax: abilityCooldownMax,
-                hasAbilityCooldown: buffData.hasAbilityCooldown,
-                isStack: buffData.isStack,
-                text: newText
-              });
-              break;
-            }
-          }
-        }
-
-        // Start cooldowns for buffs no longer detected
-        Array.from(this.matchedBuffsCache.keys()).forEach(buffName => {
-          if (!currentActiveBuffs.has(buffName)) {
-            const buff = this.matchedBuffsCache.get(buffName);
-            if (buff && buff.buffDuration > 0) {
-              // Mark buff as expired
-              buff.buffDuration = 0;
-              buff.buffProgress = 0;
-            }
-          }
-        });
-      } else {
-        // No active buffs, expire all
-        Array.from(this.matchedBuffsCache.values()).forEach(buff => {
-          if (buff.buffDuration > 0) {
-            // Mark buff as expired
-            buff.buffDuration = 0;
-            buff.buffProgress = 0;
-          }
-        });
-      }
-
+    const activeEntries = this.readActiveEntries();
+    if (activeEntries.length === 0) {
+      this.expireAllCachedBuffs();
       this.saveCachedBuffs();
-      const buffsArray = Array.from(this.matchedBuffsCache.values());
-      // Sort by pinned status first (pinned on top), then by custom order
-      buffsArray.sort((a, b) => {
-        // Pinned buffs come first
-        if (a.isPinned !== b.isPinned) {
-          return a.isPinned ? -1 : 1;
-        }
-        // Within same pinned status, sort by order
-        return a.order - b.order;
-      });
-      return buffsArray;
+      return this.getSortedCachedBuffs();
     }
 
-    return [];
-  }
+    const registeredBuffs = this.getRegisteredBuffs();
+    const currentActiveBuffs = new Set<string>();
 
-  getTargetDebuffs(trackedTargetDebuffs: Record<string, boolean>) {
+    this.applyBuffMatches(activeEntries, registeredBuffs, currentActiveBuffs);
+    this.expireMissingBuffs(currentActiveBuffs);
+
+    this.saveCachedBuffs();
+    return this.getSortedCachedBuffs();
+  };
+
+  public getTargetDebuffs(trackedTargetDebuffs: Record<string, boolean>) {
     const hasTarget = this.targetMob.read();
 
     if (!hasTarget) {
@@ -231,7 +96,6 @@ export class BuffManager {
     );
 
     return targetDebuffsData.map(debuff => {
-      console.log(debuff.name, debuff.path);
       const isPresent = debuff.image ? capturedArea.findSubimage(debuff.image).length > 0 : false;
       return {
         ...debuff,
@@ -241,107 +105,7 @@ export class BuffManager {
     });
   }
 
-  private updateCooldowns = (): void => {
-    const now = Date.now();
-    Array.from(this.matchedBuffsCache.values()).forEach(buff => {
-      const elapsed = (now - buff.lastUpdate) / 1000;
-      if (elapsed > 0) {
-        // Update buff duration
-        if (buff.buffDuration > 0) {
-          buff.buffDuration = Math.max(0, buff.buffDuration - elapsed);
-          if (buff.buffDurationMax > 0) {
-            buff.buffProgress = Math.max(0, (buff.buffDuration / buff.buffDurationMax) * 100);
-          } else {
-            buff.buffProgress = 0;
-          }
-        }
-
-        // Update ability cooldown
-        if (buff.abilityCooldown > 0) {
-          buff.abilityCooldown = Math.max(0, buff.abilityCooldown - elapsed);
-          if (buff.abilityCooldownMax > 0) {
-            buff.abilityCooldownProgress = Math.max(0, (buff.abilityCooldown / buff.abilityCooldownMax) * 100);
-          } else {
-            buff.abilityCooldownProgress = 0;
-          }
-        }
-
-        buff.lastUpdate = now;
-      }
-    });
-  };
-
-  private saveCachedBuffs = (): void => {
-    const buffsArray: PersistedBuff[] = Array.from(this.matchedBuffsCache.values()).map(buff => ({
-      name: buff.name,
-      isPinned: buff.isPinned,
-      isAudioQueued: buff.isAudioQueued,
-      order: buff.order,
-      imagePath: buff.imagePath,
-      abilityCooldown: buff.abilityCooldown,
-      abilityCooldownProgress: buff.abilityCooldownProgress,
-      abilityCooldownMax: buff.abilityCooldownMax,
-      hasAbilityCooldown: buff.hasAbilityCooldown,
-      isStack: buff.isStack,
-      text: buff.text
-    }));
-    this.storage.save(this.TRACKED_BUFFS_KEY, buffsArray);
-  };
-
-  private loadCachedBuffs = (): void => {
-    const buffsArray = this.storage.get<PersistedBuff[]>(this.TRACKED_BUFFS_KEY);
-    if (buffsArray && Array.isArray(buffsArray)) {
-      this.matchedBuffsCache.clear();
-      buffsArray.forEach(buff => {
-        this.matchedBuffsCache.set(buff.name, {
-          name: buff.name,
-          imagePath: buff.imagePath || '',
-          buffDuration: 0,
-          lastUpdate: Date.now(),
-          buffProgress: 0,
-          buffDurationMax: 0,
-          isPinned: buff.isPinned,
-          isAudioQueued: buff.isAudioQueued,
-          abilityCooldown: buff.abilityCooldown || 0,
-          abilityCooldownProgress: buff.abilityCooldownProgress || 0,
-          abilityCooldownMax: buff.abilityCooldownMax || 0,
-          order: buff.order ?? 999,
-          hasAbilityCooldown: buff.hasAbilityCooldown,
-          isStack: buff.isStack,
-          text: buff.text
-        });
-      });
-    }
-  };
-
-  public findBuffsAndDebuffs = (buffReader: BuffReader.default): boolean => {
-    const buffsFound = buffReader.find();
-
-    if (buffsFound) {
-      setTimeout(() => {
-        alt1.overLaySetGroup('buffsArea');
-        alt1.overLayRect(
-          a1lib.mixColor(120, 255, 120),
-          this.buffs.getCaptRect().x,
-          this.buffs.getCaptRect().y,
-          this.buffs.getCaptRect().width,
-          this.buffs.getCaptRect().height,
-          3000,
-          1
-        );
-      }, 1000);
-
-      setTimeout(() => {
-        alt1.overLayClearGroup('buffsArea');
-      }, 4000);
-
-      return true;
-    }
-    return false;
-  };
-
   public setOverlayPosition = (overlayPositionKey: string, onPositionSaved?: () => void): void => {
-    //alt1.setTooltip('Press Alt+1 to save position');
     a1lib.once('alt1pressed', () => {
       try {
         const mousePos = a1lib.getMousePosition();
@@ -422,5 +186,291 @@ export class BuffManager {
       }
     });
     this.saveCachedBuffs();
+  };
+
+  private ensureReaderPosition(reader: BuffReader.default): void {
+    if (!reader.pos) {
+      this.findBuffsAndDebuffs(reader);
+    }
+  }
+
+  private readActiveEntries(): Alt1Buff[] {
+    const activeBuffs = this.buffs.pos ? this.buffs.read() ?? [] : [];
+    const activeDebuffs = this.debuffs.pos ? this.debuffs.read() ?? [] : [];
+    return [...activeBuffs, ...activeDebuffs];
+  }
+
+  private getRegisteredBuffs(): BuffData[] {
+    return BuffImageRegistry.buffData.filter(buff => !buff.isTarget);
+  }
+
+  private applyBuffMatches(
+    activeEntries: Alt1Buff[],
+    registeredBuffs: BuffData[],
+    currentActiveBuffs: Set<string>
+  ): void {
+    for (const activeEntry of activeEntries) {
+      for (const buffData of registeredBuffs) {
+        if (!buffData.image) {
+          continue;
+        }
+
+        const matchResult = activeEntry.countMatch(
+          buffData.image,
+          buffData.useAggressiveSearh || false
+        );
+
+        if (matchResult.passed >= buffData.threshold) {
+          this.registerMatchedBuff(activeEntry, buffData, currentActiveBuffs, matchResult.passed);
+          break;
+        }
+      }
+    }
+  }
+
+  private registerMatchedBuff(
+    activeBuff: Alt1Buff,
+    buffData: BuffData,
+    currentActiveBuffs: Set<string>,
+    matchScore: number
+  ): void {
+    const detectedDuration = activeBuff.readTime();
+    const buffText = activeBuff.readArg('arg').arg || '';
+
+    if (buffData.debug) {
+      console.debug(`match: ${buffData.name}:${buffData.threshold} -> passed: ${matchScore}`);
+      console.debug(`debug: ${buffData.name} -> arg: ${buffText}`);
+    }
+
+    currentActiveBuffs.add(buffData.name);
+
+    const existingBuff = this.matchedBuffsCache.get(buffData.name);
+    const durationState = this.calculateDurationState(buffText, detectedDuration, existingBuff);
+    const cooldownState = this.calculateCooldownState(existingBuff, buffData, durationState.buffProgress);
+
+    this.matchedBuffsCache.set(buffData.name, {
+      name: buffData.name,
+      imagePath: buffData.path,
+      buffDuration: durationState.buffDuration,
+      lastUpdate: Date.now(),
+      buffProgress: durationState.buffProgress,
+      buffDurationMax: durationState.buffDurationMax,
+      isPinned: existingBuff?.isPinned ?? false,
+      isAudioQueued: existingBuff?.isAudioQueued ?? false,
+      order: existingBuff?.order ?? 999,
+      abilityCooldown: cooldownState.abilityCooldown,
+      abilityCooldownProgress: cooldownState.abilityCooldownProgress,
+      abilityCooldownMax: cooldownState.abilityCooldownMax,
+      hasAbilityCooldown: buffData.hasAbilityCooldown,
+      isStack: buffData.isStack,
+      text: durationState.text
+    });
+  }
+
+  private calculateDurationState(
+    buffText: string,
+    detectedDuration: number,
+    existingBuff?: BuffCacheEntry
+  ): { buffDuration: number; buffDurationMax: number; buffProgress: number; text: string } {
+    if (buffText.length <= 59) {
+      const buffDurationMax = existingBuff?.buffDurationMax ?? detectedDuration;
+      const buffProgress = buffDurationMax > 0 ? (detectedDuration / buffDurationMax) * 100 : 0;
+
+      return {
+        buffDuration: detectedDuration,
+        buffDurationMax,
+        buffProgress,
+        text: buffText
+      };
+    }
+
+    if (!existingBuff || detectedDuration > existingBuff.buffDuration) {
+      return {
+        buffDuration: detectedDuration,
+        buffDurationMax: detectedDuration,
+        buffProgress: 100,
+        text: buffText
+      };
+    }
+
+    return {
+      buffDuration: existingBuff.buffDuration,
+      buffDurationMax: existingBuff.buffDurationMax,
+      buffProgress: existingBuff.buffProgress,
+      text: existingBuff.text
+    };
+  }
+
+  private calculateCooldownState(
+    existingBuff: BuffCacheEntry | undefined,
+    buffData: BuffData,
+    newBuffProgress: number
+  ): { abilityCooldown: number; abilityCooldownMax: number; abilityCooldownProgress: number } {
+    if (!existingBuff) {
+      return {
+        abilityCooldown: buffData.abilityCooldown,
+        abilityCooldownMax: buffData.abilityCooldown,
+        abilityCooldownProgress: 100
+      };
+    }
+
+    if (newBuffProgress === 100 && existingBuff.buffProgress < 100 && buffData.hasAbilityCooldown) {
+      return {
+        abilityCooldown: buffData.abilityCooldown,
+        abilityCooldownMax: buffData.abilityCooldown,
+        abilityCooldownProgress: 100
+      };
+    }
+
+    if (existingBuff.buffDuration === 0 && buffData.hasAbilityCooldown) {
+      if (existingBuff.abilityCooldown === 0 || existingBuff.abilityCooldownMax === 0) {
+        return {
+          abilityCooldown: buffData.abilityCooldown,
+          abilityCooldownMax: buffData.abilityCooldown,
+          abilityCooldownProgress: 100
+        };
+      }
+
+      return {
+        abilityCooldown: existingBuff.abilityCooldown,
+        abilityCooldownMax: existingBuff.abilityCooldownMax,
+        abilityCooldownProgress: existingBuff.abilityCooldownProgress
+      };
+    }
+
+    return {
+      abilityCooldown: existingBuff.abilityCooldown,
+      abilityCooldownMax: existingBuff.abilityCooldownMax,
+      abilityCooldownProgress: existingBuff.abilityCooldownProgress
+    };
+  }
+
+  private expireMissingBuffs(currentActiveBuffs: Set<string>): void {
+    this.matchedBuffsCache.forEach((buff, buffName) => {
+      if (!currentActiveBuffs.has(buffName) && buff.buffDuration > 0) {
+        buff.buffDuration = 0;
+        buff.buffProgress = 0;
+      }
+    });
+  }
+
+  private expireAllCachedBuffs(): void {
+    this.matchedBuffsCache.forEach(buff => {
+      if (buff.buffDuration > 0) {
+        buff.buffDuration = 0;
+        buff.buffProgress = 0;
+      }
+    });
+  }
+
+  private getSortedCachedBuffs(): BuffCacheEntry[] {
+    const buffsArray = Array.from(this.matchedBuffsCache.values());
+    buffsArray.sort((a, b) => {
+      if (a.isPinned !== b.isPinned) {
+        return a.isPinned ? -1 : 1;
+      }
+
+      return a.order - b.order;
+    });
+    return buffsArray;
+  }
+
+  private updateCooldowns = (): void => {
+    const now = Date.now();
+    this.matchedBuffsCache.forEach(buff => {
+      const elapsed = (now - buff.lastUpdate) / 1000;
+      if (elapsed > 0) {
+        // Update buff duration
+        if (buff.buffDuration > 0) {
+          buff.buffDuration = Math.max(0, buff.buffDuration - elapsed);
+          if (buff.buffDurationMax > 0) {
+            buff.buffProgress = Math.max(0, (buff.buffDuration / buff.buffDurationMax) * 100);
+          } else {
+            buff.buffProgress = 0;
+          }
+        }
+
+        // Update ability cooldown
+        if (buff.abilityCooldown > 0) {
+          buff.abilityCooldown = Math.max(0, buff.abilityCooldown - elapsed);
+          if (buff.abilityCooldownMax > 0) {
+            buff.abilityCooldownProgress = Math.max(0, (buff.abilityCooldown / buff.abilityCooldownMax) * 100);
+          } else {
+            buff.abilityCooldownProgress = 0;
+          }
+        }
+
+        buff.lastUpdate = now;
+      }
+    });
+  };
+
+  private saveCachedBuffs = (): void => {
+    const buffsArray: PersistedBuff[] = Array.from(this.matchedBuffsCache.values()).map(buff => ({
+      name: buff.name,
+      isPinned: buff.isPinned,
+      isAudioQueued: buff.isAudioQueued,
+      order: buff.order,
+      imagePath: buff.imagePath,
+      abilityCooldown: buff.abilityCooldown,
+      abilityCooldownProgress: buff.abilityCooldownProgress,
+      abilityCooldownMax: buff.abilityCooldownMax,
+      hasAbilityCooldown: buff.hasAbilityCooldown,
+      isStack: buff.isStack,
+      text: buff.text
+    }));
+    this.storage.save(this.TRACKED_BUFFS_KEY, buffsArray);
+  };
+
+  private loadCachedBuffs = (): void => {
+    const buffsArray = this.storage.get<PersistedBuff[]>(this.TRACKED_BUFFS_KEY);
+    if (buffsArray && Array.isArray(buffsArray)) {
+      this.matchedBuffsCache.clear();
+      buffsArray.forEach(buff => {
+        this.matchedBuffsCache.set(buff.name, {
+          name: buff.name,
+          imagePath: buff.imagePath || '',
+          buffDuration: 0,
+          lastUpdate: Date.now(),
+          buffProgress: 0,
+          buffDurationMax: 0,
+          isPinned: buff.isPinned,
+          isAudioQueued: buff.isAudioQueued,
+          abilityCooldown: buff.abilityCooldown || 0,
+          abilityCooldownProgress: buff.abilityCooldownProgress || 0,
+          abilityCooldownMax: buff.abilityCooldownMax || 0,
+          order: buff.order ?? 999,
+          hasAbilityCooldown: buff.hasAbilityCooldown,
+          isStack: buff.isStack,
+          text: buff.text || ''
+        });
+      });
+    }
+  };
+
+  private findBuffsAndDebuffs = (buffReader: BuffReader.default): boolean => {
+    const buffsFound = buffReader.find();
+
+    if (buffsFound) {
+      setTimeout(() => {
+        alt1.overLaySetGroup('buffsArea');
+        alt1.overLayRect(
+          a1lib.mixColor(120, 255, 120),
+          this.buffs.getCaptRect().x,
+          this.buffs.getCaptRect().y,
+          this.buffs.getCaptRect().width,
+          this.buffs.getCaptRect().height,
+          3000,
+          1
+        );
+      }, 1000);
+
+      setTimeout(() => {
+        alt1.overLayClearGroup('buffsArea');
+      }, 4000);
+
+      return true;
+    }
+    return false;
   };
 }

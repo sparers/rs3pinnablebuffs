@@ -323,7 +323,6 @@ Alpine.data('buffsData', () => ({
 
   isAlerted(buffName: string) {
     const buff = this.buffs.find(b => b.name === buffName);
-    //console.log(buffName, buff.abilityCooldown);
     if (!buff) return false;
     return this.abilityCooldownAlertedBuffs.has(buffName) && buff.abilityCooldown > 0;
   },

@@ -272,8 +272,11 @@ export class BuffManager {
     detectedDuration: number,
     existingBuff?: BuffCacheEntry
   ): { buffDuration: number; buffDurationMax: number; buffProgress: number; text: string } {
-    if (buffText.length <= 59) {
-      const buffDurationMax = existingBuff?.buffDurationMax ?? detectedDuration;
+    if (detectedDuration <= 59) {
+      let buffDurationMax = existingBuff?.buffDurationMax ?? detectedDuration;
+      if (buffDurationMax <= 0 && detectedDuration > 0) {
+        buffDurationMax = detectedDuration;
+      }
       const buffProgress = buffDurationMax > 0 ? (detectedDuration / buffDurationMax) * 100 : 0;
 
       return {

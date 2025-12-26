@@ -299,7 +299,7 @@ Alpine.data('buffsData', () => ({
     return (
       this.buffs.some(buff => this.isAlerted(buff.name)) ||
       this.targetDebuffs.length > 0 ||
-      this.stacks.some(stack => stack.cooldown > 0)
+      this.stacks.some(stack => stack.buffDuration > 0)
     );
   },
 

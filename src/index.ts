@@ -82,6 +82,7 @@ if (window.alt1) {
     Alt1 not detected, click <a href='${addAppUrl}'>here</a> to add this app to Alt1
   `);
 }
+// end app init
 
 Alpine.data('buffsData', () => ({
   buffs: [],
@@ -220,10 +221,10 @@ Alpine.data('buffsData', () => ({
   resetSettings() {
     this.loop.pause();
     storage.clear();
-    const previousBuffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
-    const previousCenterGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
-    overlayManager.clearOverlay(previousBuffGroup);
-    overlayManager.clearOverlay(previousCenterGroup)
+    const buffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
+    const centerGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
+    overlayManager.clearOverlay(buffGroup);
+    overlayManager.clearOverlay(centerGroup)
     location.reload();
     this.loop.start();
   },
@@ -317,6 +318,9 @@ Alpine.data('buffsData', () => ({
       buffManager.saveBuffOrder(this.buffs);
     }
   },
+  hasPinedBuffs() {
+    return this.buffs.some(b => b.isPinned);
+  },
   hasAlertedBuffs() {
     return (
       this.buffs.some(buff => this.isAlerted(buff.name)) ||
@@ -409,8 +413,19 @@ Alpine.data('buffsData', () => ({
       await waitForNextFrame();
 
       const scale = this.overlaySettings.scale;
-      await overlayManager.captureElementAsOverlay('buffs-output', profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP, this.activeProfile), scale);
-      await overlayManager.captureElementAsOverlay('alerted-buffs', profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP, this.activeProfile), scale);
+
+      if (this.hasPinedBuffs()) {
+        await overlayManager.captureElementAsOverlay('buffs-output', profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP, this.activeProfile), scale);
+      } else {
+        const buffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
+        overlayManager.clearOverlay(buffGroup);
+      }
+      if (this.hasAlertedBuffs()) {
+        await overlayManager.captureElementAsOverlay('alerted-buffs', profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP, this.activeProfile), scale);
+      } else {
+        const centerGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
+        overlayManager.clearOverlay(centerGroup);
+      }
     }
 
     this.loop = new AsyncLoop(updateLoop, REFRESH_INTERVAL_MS);

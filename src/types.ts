@@ -25,7 +25,6 @@ export interface BuffCacheEntry {
     abilityCooldownProgress: number;
     abilityCooldownMax: number;
     isStack: boolean;
-    skipCooldownCheck: boolean;
     text: string;
     order: number;
 }
@@ -40,7 +39,6 @@ export interface PersistedBuff {
     abilityCooldownProgress?: number;
     abilityCooldownMax?: number;
     isStack: boolean;
-    skipCooldownCheck: boolean;
     text: string;
 }
 

@@ -25,7 +25,7 @@ const OVERLAY_GROUP_LABELS: Record<string, string> = {
   [CENTER_OVERLAY_GROUP]: 'Alerts'
 };
 
-const REFRESH_INTERVAL_MS = 150;
+const REFRESH_INTERVAL_MS = 3000;
 const POSITION_TRACK_INTERVAL_MS = 100;
 const SCALE_RANGE = { min: 1, max: 3 };
 const ALERT_THRESHOLD_RANGE = { min: 1, max: 60 };
@@ -429,7 +429,7 @@ Alpine.data('buffsData', () => ({
   },
 
   hasStacks() {
-    return this.stacks.some(stack => stack.buffDuration > 0 || stack.skipCooldownCheck);
+    return this.stacks.some(stack => stack.buffDuration > 0);
   },
 
 

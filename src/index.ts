@@ -69,11 +69,20 @@ const cloneEntries = <T extends object>(entries: T[]): T[] => entries.map(entry 
 const waitForNextFrame = () =>
   new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 
-// Initialize Alt1 app
+const clearOverlays = () => {
+  const buffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
+  const centerGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
+  overlayManager.clearOverlay(buffGroup);
+  overlayManager.clearOverlay(centerGroup);
+}
+
+// Alt1 app handles
 if (window.alt1) {
   a1lib.identifyApp("./appconfig.json");
   const settings = document.getElementById("settings") as HTMLElement;
   settings.className = "";
+  // clear the overlays when you close the app
+  window.addEventListener('unload', clearOverlays);
 } else {
   const output = document.getElementById("output") as HTMLElement;
   output.className = "";
@@ -221,10 +230,7 @@ Alpine.data('buffsData', () => ({
   resetSettings() {
     this.loop.pause();
     storage.clear();
-    const buffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
-    const centerGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
-    overlayManager.clearOverlay(buffGroup);
-    overlayManager.clearOverlay(centerGroup)
+    clearOverlays();
     location.reload();
     this.loop.start();
   },

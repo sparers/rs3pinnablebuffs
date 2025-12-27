@@ -78,7 +78,7 @@
                   <div
                     class="buff-bar-track cooldown"
                     :class="{'flashing': isLowAbilityCooldown(buff) }"
-                    x-show="buff.hasAbilityCooldown && buff.abilityCooldown > 0"
+                    x-show="buff.abilityCooldown && buff.abilityCooldown > 0"
                   >
                     <div class="bar-fill cooldown-fill" :style="{ width: buff.abilityCooldownProgress + '%' }"></div>
                     <span class="buff-label">

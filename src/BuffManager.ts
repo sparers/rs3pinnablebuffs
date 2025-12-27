@@ -1,10 +1,9 @@
-import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
-import * as htmlToImage from 'html-to-image';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { LocalStorageHelper } from './LocalStorageHelper';
+import { OverlayManager } from './OverlayManager';
 import { ProfileManager } from './ProfileManager';
-import type { BuffCacheEntry, BuffData, OverlayPosition, PersistedBuff } from './types';
+import type { BuffCacheEntry, BuffData, PersistedBuff } from './types';
 
 type Alt1Buff = NonNullable<ReturnType<BuffReader.default['read']>>[number];
 
@@ -13,13 +12,15 @@ export class BuffManager {
   private readonly debuffs: BuffReader.default;
   private readonly storage: LocalStorageHelper;
   private readonly profileManager: ProfileManager;
+  private readonly overlayManager: OverlayManager;
   private readonly matchedBuffsCache = new Map<string, BuffCacheEntry>();
 
-  constructor(storage: LocalStorageHelper, profileManager: ProfileManager) {
+  constructor(storage: LocalStorageHelper, profileManager: ProfileManager, overlayManager: OverlayManager) {
     this.buffs = new BuffReader.default();
     this.debuffs = new BuffReader.default();
     this.storage = storage;
     this.profileManager = profileManager;
+    this.overlayManager = overlayManager;
     this.loadCachedBuffs();
   }
 
@@ -48,62 +49,6 @@ export class BuffManager {
 
     this.saveCachedBuffs();
     return this.getSortedCachedBuffs();
-  };
-
-  public setOverlayPosition = (overlayPositionKey: string, onPositionSaved?: () => void): void => {
-    a1lib.once('alt1pressed', () => {
-      try {
-        const mousePos = a1lib.getMousePosition();
-        this.storage.save<OverlayPosition>(overlayPositionKey, {
-          x: Math.floor(mousePos.x),
-          y: Math.floor(mousePos.y),
-        });
-
-        if (onPositionSaved) {
-          onPositionSaved();
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  };
-
-  public captureOverlay = async (group: string, element: HTMLElement, scale: number): Promise<void> => {
-    try {
-      const style = getComputedStyle(element);
-      const dataUrl = await htmlToImage.toCanvas(element, {
-        width: parseInt(style.width) || 1,
-        height: parseInt(style.height) || 1,
-        quality: 1,
-        pixelRatio: scale,
-        imagePlaceholder: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="%23ddd"/><text x="16" y="16" text-anchor="middle" dy=".3em" font-size="10" fill="%23999">?</text></svg>',
-        style: {
-          transform: 'none',
-          left: '0',
-          top: '0',
-          position: 'static'
-        }
-      });
-
-      const overlayPosition = this.storage.get<OverlayPosition>(group);
-      if (!overlayPosition) return;
-
-      const base64ImageString = dataUrl.getContext('2d')!.getImageData(0, 0, dataUrl.width, dataUrl.height);
-
-      alt1.overLaySetGroup(group);
-      alt1.overLayFreezeGroup(group);
-      alt1.overLayClearGroup(group);
-      alt1.overLayImage(
-        overlayPosition.x,
-        overlayPosition.y,
-        a1lib.encodeImageString(base64ImageString),
-        base64ImageString.width,
-        150
-      );
-      alt1.overLayRefreshGroup(group);
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   public toggleBuffPin = (buffName: string): void => {
@@ -425,21 +370,16 @@ export class BuffManager {
   private findBuffsAndDebuffs = (buffReader: BuffReader.default): boolean => {
     const buffsFound = buffReader.find();
     if (!buffsFound) return false;
-    const area = 'buffsCaptureArea'
-    alt1.overLaySetGroup(area);
-    alt1.overLayRect(
-      a1lib.mixColor(120, 255, 120),
-      this.buffs.getCaptRect().x,
-      this.buffs.getCaptRect().y,
-      this.buffs.getCaptRect().width,
-      this.buffs.getCaptRect().height,
-      3000,
-      1
-    );
 
-    setTimeout(() => {
-      alt1.overLayClearGroup(area);
-    }, 4000);
+    const rect = buffReader.getCaptRect?.();
+    if (rect) {
+      this.overlayManager.highlightCaptureArea({
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height
+      });
+    }
 
     return true;
   };

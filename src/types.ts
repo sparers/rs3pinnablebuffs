@@ -6,6 +6,7 @@ export interface BuffData {
     path: string;
     abilityCooldown?: number;
     isStack?: boolean;
+    skipCooldownCheck?: boolean;
     isTarget?: boolean;
     useAggressiveSearh?: boolean;
     debug?: boolean;
@@ -24,6 +25,7 @@ export interface BuffCacheEntry {
     abilityCooldownProgress: number;
     abilityCooldownMax: number;
     isStack: boolean;
+    skipCooldownCheck: boolean;
     text: string;
     order: number;
 }
@@ -38,6 +40,7 @@ export interface PersistedBuff {
     abilityCooldownProgress?: number;
     abilityCooldownMax?: number;
     isStack: boolean;
+    skipCooldownCheck: boolean;
     text: string;
 }
 

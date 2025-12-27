@@ -429,8 +429,10 @@ Alpine.data('buffsData', () => ({
   },
 
   hasStacks() {
-    return this.stacks.some(stack => stack.buffDuration > 0);
+    return this.stacks.some(stack => stack.buffDuration > 0 || stack.skipCooldownCheck);
   },
+
+
 
   async init() {
     this.loadProfiles();

@@ -210,6 +210,7 @@ export class BuffManager {
       abilityCooldownProgress: cooldownState.abilityCooldownProgress,
       abilityCooldownMax: cooldownState.abilityCooldownMax,
       isStack: !!buffData.isStack,
+      skipCooldownCheck: !!buffData.skipCooldownCheck,
       text: durationState.text
     });
   }
@@ -386,6 +387,7 @@ export class BuffManager {
       abilityCooldownProgress: buff.abilityCooldownProgress,
       abilityCooldownMax: buff.abilityCooldownMax,
       isStack: buff.isStack,
+      skipCooldownCheck: buff.skipCooldownCheck,
       text: buff.text
     }));
     this.storage.save(this.profileManager.getTrackedBuffsKey(), buffsArray);
@@ -411,6 +413,7 @@ export class BuffManager {
           abilityCooldownMax: buff.abilityCooldownMax || 0,
           order: buff.order ?? 999,
           isStack: buff.isStack,
+          skipCooldownCheck: buff.skipCooldownCheck,
           text: buff.text || ''
         });
       });

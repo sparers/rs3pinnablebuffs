@@ -180,6 +180,7 @@ export class BuffImageRegistry {
       },
       {
         name: "Death Spark", image: this.Buffs.DeathSpark, threshold: 300, path: './imgs/icons/death_spark.png',
+        isStack: true, skipCooldownCheck: true, debug: true
       },
       {
         name: "Balance By Force", image: this.Buffs.balanceByForce, threshold: 30, path: './imgs/icons/balance_by_force.png',

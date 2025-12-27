@@ -9,13 +9,15 @@ import { BuffManager } from './BuffManager';
 import "./icon.png";
 import "./index.html";
 import { LocalStorageHelper } from './LocalStorageHelper';
+import { OverlayManager } from './OverlayManager';
 import { ProfileManager } from './ProfileManager';
 import { TargetManager } from './TargetManager';
 import { OverlaySettings } from './types';
 
 const storage = new LocalStorageHelper();
 const profileManager = new ProfileManager(storage);
-const buffManager = new BuffManager(storage, profileManager);
+const overlayManager = new OverlayManager(storage);
+const buffManager = new BuffManager(storage, profileManager, overlayManager);
 const targetManager = new TargetManager();
 const BUFFS_OVERLAY_GROUP = 'buffsOverlayGroup';
 const CENTER_OVERLAY_GROUP = 'centerOverlayGroup';
@@ -110,67 +112,29 @@ Alpine.data('buffsData', () => ({
   },
 
   togglePin(buffName: string) {
-    // Update local state immediately for instant UI feedback
     const buff = this.buffs.find(b => b.name === buffName);
     if (buff) {
       buff.isPinned = !buff.isPinned;
     }
-    // Then update the manager's cache
     buffManager.toggleBuffPin(buffName);
   },
 
-  toggleAudioQueue(buffName: string) {
-    // Update local state immediately for instant UI feedback
+  toggleAudioCue(buffName: string) {
     const buff = this.buffs.find(b => b.name === buffName);
     if (buff) {
       buff.isAudioQueued = !buff.isAudioQueued;
     }
-    // Then update the manager's cache
     buffManager.toggleBuffAudioQueue(buffName);
   },
 
   async setOverlayPosition(group: string) {
-    // Start tracking mouse with placeholder
-    const intervalId = this.startPositionTracking(group);
-
+    const label = OVERLAY_GROUP_LABELS[group] ?? group;
+    const intervalId = overlayManager.startPositionTracking(group, label, POSITION_TRACK_INTERVAL_MS);
     const profileKey = profileManager.getOverlayGroupKey(group, this.activeProfile);
-    buffManager.setOverlayPosition(profileKey, () => {
-      // Stop tracking and clear placeholder when position is saved
-      this.stopPositionTracking(group, intervalId);
+    overlayManager.setOverlayPosition(profileKey, () => {
+      overlayManager.stopPositionTracking(group, intervalId);
       this.checkOverlayPositions();
     });
-  },
-
-  startPositionTracking(group: string): number {
-    const placeholderGroup = `${group}-placeholder`;
-    const label = OVERLAY_GROUP_LABELS[group] ?? group;
-
-    return window.setInterval(() => {
-      const mousePos = a1lib.getMousePosition();
-
-      alt1.overLayClearGroup(placeholderGroup);
-      alt1.overLaySetGroup(placeholderGroup);
-      alt1.overLayTextEx(
-        `Press Alt+1 to set the ${label} group position.`,
-        a1lib.mixColor(255, 255, 255),
-        18,
-        mousePos.x,
-        mousePos.y,
-        9999,
-        '',
-        true,
-        true
-      );
-    }, POSITION_TRACK_INTERVAL_MS);
-  },
-
-  stopPositionTracking(group: string, intervalId: number) {
-    // Stop the interval
-    window.clearInterval(intervalId);
-
-    // Clear the placeholder overlay
-    const placeholderGroup = `${group}-placeholder`;
-    alt1.overLayClearGroup(placeholderGroup);
   },
 
   saveOverlaySettings() {
@@ -256,6 +220,10 @@ Alpine.data('buffsData', () => ({
   resetSettings() {
     this.loop.pause();
     storage.clear();
+    const previousBuffGroup = profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP);
+    const previousCenterGroup = profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP);
+    overlayManager.clearOverlay(previousBuffGroup);
+    overlayManager.clearOverlay(previousCenterGroup)
     location.reload();
     this.loop.start();
   },
@@ -279,10 +247,8 @@ Alpine.data('buffsData', () => ({
     this.stacks = [];
     this.targetDebuffs = [];
 
-    alt1.overLayClearGroup(previousBuffGroup);
-    alt1.overLayRefreshGroup(previousBuffGroup);
-    alt1.overLayClearGroup(previousCenterGroup);
-    alt1.overLayRefreshGroup(previousCenterGroup);
+    overlayManager.clearOverlay(previousBuffGroup);
+    overlayManager.clearOverlay(previousCenterGroup);
 
     this.activeProfile = name;
 
@@ -344,8 +310,6 @@ Alpine.data('buffsData', () => ({
       const draggedBuff = this.buffs[this.draggedIndex];
       this.buffs.splice(this.draggedIndex, 1);
       this.buffs.splice(dropIndex, 0, draggedBuff);
-
-      // Update order property for all buffs
       this.buffs.forEach((buff, idx) => {
         buff.order = idx;
       });
@@ -380,26 +344,21 @@ Alpine.data('buffsData', () => ({
       const isLowBuffDuration = this.isLowBuffDuration(buff);
 
       if (isLowBuffDuration && buff.isPinned && !this.alertedBuffs.has(buff.name) && !buff.abilityCooldown && !buff.isStack) {
-        // Play alert sound
         if (buff.isAudioQueued) {
           playAudioCue(this.clockTickingAudio);
           stopAudioAfter(this.clockTickingAudio, buff.buffDuration);
         }
-        // Mark this buff as alerted
         this.alertedBuffs.add(buff.name);
       } else if (!isLowBuffDuration && this.alertedBuffs.has(buff.name)) {
-        // Remove from alerted set when buff is no longer flashing
         this.alertedBuffs.delete(buff.name);
         this.clockTickingAudio.pause();
       }
 
       const isLowAbilityCooldown = this.isLowAbilityCooldown(buff);
       if (isLowAbilityCooldown && buff.isPinned && !this.abilityCooldownAlertedBuffs.has(buff.name)) {
-        // Play long alert sound
         if (buff.isAudioQueued) {
           playAudioCue(this.popAlertAudio);
         }
-        // Mark this buff as alerted
         this.abilityCooldownAlertedBuffs.add(buff.name);
       } else if (!isLowAbilityCooldown && this.abilityCooldownAlertedBuffs.has(buff.name)) {
         this.abilityCooldownAlertedBuffs.delete(buff.name);
@@ -409,10 +368,8 @@ Alpine.data('buffsData', () => ({
     this.targetDebuffs.forEach(debuff => {
       if (!this.alertedDebuffs.has(debuff.name) && debuff.abilityCooldown === 0 && this.overlaySettings.targetDebuffAudioAlert) {
         playAudioCue(this.popAlertAudio);
-        // Mark this debuff as alerted
         this.alertedDebuffs.add(debuff.name);
       } else if (this.alertedDebuffs.has(debuff.name) && debuff.abilityCooldown === 1) {
-        // Remove from alerted set when debuff is no longer flashing
         this.alertedDebuffs.delete(debuff.name);
       }
     });
@@ -431,8 +388,6 @@ Alpine.data('buffsData', () => ({
   hasStacks() {
     return this.stacks.some(stack => stack.buffDuration > 0);
   },
-
-
 
   async init() {
     this.loadProfiles();
@@ -454,50 +409,14 @@ Alpine.data('buffsData', () => ({
       await waitForNextFrame();
 
       const scale = this.overlaySettings.scale;
-      await captureElementAsOverlay('buffs-output', profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP, this.activeProfile), scale);
-      await captureElementAsOverlay('alerted-buffs', profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP, this.activeProfile), scale);
+      await overlayManager.captureElementAsOverlay('buffs-output', profileManager.getOverlayGroupKey(BUFFS_OVERLAY_GROUP, this.activeProfile), scale);
+      await overlayManager.captureElementAsOverlay('alerted-buffs', profileManager.getOverlayGroupKey(CENTER_OVERLAY_GROUP, this.activeProfile), scale);
     }
 
     this.loop = new AsyncLoop(updateLoop, REFRESH_INTERVAL_MS);
     this.loop.start();
-
   }
 }));
-
-async function captureElementAsOverlay(elementId: string, overlayGroup: string, scale: number) {
-  const container = document.getElementById(elementId) as HTMLElement;
-  if (!container) return;
-
-  const innerHtml = stripAlpine(container.outerHTML);
-  const readyToCapture = document.createElement('div');
-  readyToCapture.innerHTML = innerHtml;
-  readyToCapture.style.position = 'absolute';
-  readyToCapture.style.top = '0';
-  readyToCapture.style.left = '-9999px';
-  readyToCapture.querySelectorAll('.exclude-me').forEach(el => el.remove());
-
-
-  document.body.appendChild(readyToCapture);
-
-  await Promise.all(
-    Array.from(readyToCapture.querySelectorAll('img')).map(img => {
-      if (img.complete) return Promise.resolve();
-      return new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-    })
-  );
-
-  await buffManager.captureOverlay(overlayGroup, readyToCapture, scale);
-  readyToCapture.remove();
-}
-
-function stripAlpine(html: string): string {
-  return html
-    .replace(/<template[^>]*>[\s\S]*?<\/template>/gi, '')
-    .replace(/\s+(x-[a-z:-]+|:[a-z-]+|@[a-z.-]+)(="[^"]*")?/gi, '')
-}
 
 async function start() {
   await BuffImageRegistry.initialize();

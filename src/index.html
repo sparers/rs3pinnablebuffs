@@ -117,7 +117,7 @@
                   <button
                     class="audio-button exclude-me"
                     :class="{ 'queued': buff.isAudioQueued }"
-                    @click="toggleAudioQueue(buff.name)"
+                    @click="toggleAudioCue(buff.name)"
                     type="button"
                     :aria-label="buff.isAudioQueued ? 'Remove from audio queue' : 'Add to audio queue'"
                   >

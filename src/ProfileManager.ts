@@ -18,7 +18,7 @@ export class ProfileManager {
         if (profileName) {
             return profileName;
         }
-        this.activeProfile = this.storage.get<string>(this.ACTIVE_PROFILE_KEY).toString() ?? this.activeProfile ?? 'default';
+        this.activeProfile = this.storage.get<string>(this.ACTIVE_PROFILE_KEY)?.toString() ?? this.activeProfile ?? 'default';
         return this.activeProfile;
     };
 

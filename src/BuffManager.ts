@@ -1,6 +1,5 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
-import * as TargetMob from 'alt1/targetmob';
 import * as htmlToImage from 'html-to-image';
 import { BuffImageRegistry } from './BuffImageRegistry';
 import { LocalStorageHelper } from './LocalStorageHelper';
@@ -12,7 +11,6 @@ export class BuffManager {
   private readonly buffs: BuffReader.default;
   private readonly debuffs: BuffReader.default;
   private readonly storage: LocalStorageHelper;
-  private readonly targetMob = new TargetMob.default();
   private readonly matchedBuffsCache = new Map<string, BuffCacheEntry>();
   private readonly TRACKED_BUFFS_KEY_PREFIX = 'profile_';
   private readonly TRACKED_BUFFS_KEY_SUFFIX = '_trackedBuffs';
@@ -94,46 +92,6 @@ export class BuffManager {
     this.saveCachedBuffs();
     return this.getSortedCachedBuffs();
   };
-
-  public getTargetDebuffs = (trackedTargetDebuffs: Record<string, boolean>) => {
-    const hasTarget = this.targetMob.read();
-
-    if (!hasTarget) {
-      return [];
-    }
-
-    const targetPos = this.targetMob.lastpos;
-    if (!targetPos) {
-      return [];
-    }
-
-    const targetLocation = {
-      x: targetPos.x - 120,
-      y: targetPos.y + 25,
-      w: 150,
-      h: 60,
-    };
-
-    const capturedArea = a1lib.captureHold(
-      targetLocation.x,
-      targetLocation.y,
-      targetLocation.w,
-      targetLocation.h
-    );
-
-    const targetDebuffsData = BuffImageRegistry.buffData.filter(buff =>
-      buff.isTarget &&
-      trackedTargetDebuffs[buff.name.charAt(0).toLowerCase() + buff.name.slice(1).replace(/\s+/g, '')]
-    );
-
-    return targetDebuffsData.map(debuff => {
-      const isPresent = debuff.image ? capturedArea.findSubimage(debuff.image).length > 0 : false;
-      return {
-        ...debuff,
-        abilityCooldown: isPresent ? 1 : 0
-      };
-    });
-  }
 
   public setOverlayPosition = (overlayPositionKey: string, onPositionSaved?: () => void): void => {
     a1lib.once('alt1pressed', () => {

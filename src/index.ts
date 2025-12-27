@@ -8,10 +8,12 @@ import { BuffManager } from './BuffManager';
 import "./icon.png";
 import "./index.html";
 import { LocalStorageHelper } from './LocalStorageHelper';
+import { TargetManager } from './TargetManager';
 import { OverlaySettings } from './types';
 
 const storage = new LocalStorageHelper();
 const buffManager = new BuffManager(storage);
+const targetManager = new TargetManager();
 const BUFFS_OVERLAY_GROUP = 'buffsOverlayGroup';
 const CENTER_OVERLAY_GROUP = 'centerOverlayGroup';
 
@@ -447,7 +449,7 @@ Alpine.data('buffsData', () => ({
         this.buffs = cloneEntries(activeBuffs.filter(buff => !buff.isStack));
         this.stacks = cloneEntries(activeBuffs.filter(buff => buff.isStack));
 
-        const targetDebuffs = await buffManager.getTargetDebuffs(this.overlaySettings.trackedTargetDebuffs);
+        const targetDebuffs = await targetManager.getTargetDebuffs(this.overlaySettings.trackedTargetDebuffs);
         this.targetDebuffs = cloneEntries(targetDebuffs);
 
         if (activeBuffs.length > 0 || targetDebuffs.length > 0) {

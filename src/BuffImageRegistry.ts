@@ -280,9 +280,9 @@ export class BuffImageRegistry {
       {
         name: "Sign of Life Debuff", image: this.Debuffs.signOfLifeDebuff, threshold: 20, path: './imgs/icons/sign_of_life.png',
       },
-      {
-        name: "Powerburst Prevention", image: this.Debuffs.powerburstPrevention, threshold: 20, path: './imgs/buffs/Powerburst_prevention.data.png',
-      },
+      // {
+      //   name: "Powerburst Prevention", image: this.Debuffs.powerburstPrevention, threshold: 20, path: './imgs/buffs/Powerburst_prevention.data.png',
+      // },
       // {
       //   name: "Deathspore Arrows", image: this.Debuffs.FeastingSpores, threshold: 18, path: './imgs/buffs/deathspore_arrows.data.png',
       // },

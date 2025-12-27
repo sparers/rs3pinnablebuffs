@@ -304,7 +304,7 @@ Alpine.data('buffsData', () => ({
   },
 
   isLowBuffDuration(buff) {
-    if (buff.hasAbilityCooldown) {
+    if (buff.abilityCooldown) {
       return buff.buffDuration <= 3 && buff.buffDuration > 0;
     }
     return buff.buffDuration <= this.overlaySettings.buffDurationAlertThreshold && buff.buffDuration > 0;
@@ -321,7 +321,7 @@ Alpine.data('buffsData', () => ({
     this.buffs.forEach(buff => {
       const isLowBuffDuration = this.isLowBuffDuration(buff);
 
-      if (isLowBuffDuration && buff.isPinned && !this.alertedBuffs.has(buff.name) && !buff.hasAbilityCooldown && !buff.isStack) {
+      if (isLowBuffDuration && buff.isPinned && !this.alertedBuffs.has(buff.name) && !buff.abilityCooldown && !buff.isStack) {
         // Play alert sound
         if (buff.isAudioQueued) {
           playAudioCue(this.clockTickingAudio);

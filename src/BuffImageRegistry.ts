@@ -127,7 +127,6 @@ export class BuffImageRegistry {
       {
         name: "FSOA Spec", image: this.Buffs.fsoaWeaponSpec, threshold: 80, path: './imgs/icons/fsoa_spec.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Time Rift", image: this.Buffs.timeRift, threshold: 450, path: './imgs/icons/time_rift.png',
@@ -192,55 +191,43 @@ export class BuffImageRegistry {
       {
         name: "Anticipation", image: this.Buffs.Anticipation, threshold: 300, path: './imgs/icons/anticipation.png',
         abilityCooldown: 24.6,
-        hasAbilityCooldown: true,
       },
       {
         name: "Barricade", image: this.Buffs.Barricade, threshold: 300, path: './imgs/icons/barricade.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Devotion", image: this.Buffs.Devotion, threshold: 300, path: './imgs/icons/devotion.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Divert", image: this.Buffs.Divert, threshold: 300, path: './imgs/icons/divert.png',
         abilityCooldown: 30,
-        hasAbilityCooldown: true,
       },
       {
         name: "Freedom", image: this.Buffs.Freedom, threshold: 300, path: './imgs/icons/freedom.png',
         abilityCooldown: 30,
-        hasAbilityCooldown: true,
       },
       {
         name: "Immortality", image: this.Buffs.Immortality, threshold: 300, path: './imgs/icons/immortality.png',
         abilityCooldown: 120,
-        hasAbilityCooldown: true,
       },
       {
         name: "Reflect", image: this.Buffs.Reflect, threshold: 300, path: './imgs/icons/reflect.png',
         abilityCooldown: 30,
-        hasAbilityCooldown: true,
       },
       {
         name: "Resonance", image: this.Buffs.Resonance, threshold: 300, path: './imgs/icons/resonance.png',
         abilityCooldown: 30,
-        hasAbilityCooldown: true,
       },
       {
         name: "Split Soul", image: this.Buffs.SplitSoul, threshold: 350, path: './imgs/icons/split_soul.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Threads of Fate", image: this.Buffs.ThreadsOfFate, threshold: 300, path: './imgs/icons/threads_of_fate.png',
         abilityCooldown: 45,
-        hasAbilityCooldown: true,
       },
-
-
       {
         name: "Conjure Skeleton", image: this.Buffs.ConjureSkeleton, threshold: 300, path: './imgs/icons/skeleton_warrior.png',
       },
@@ -318,12 +305,10 @@ export class BuffImageRegistry {
       {
         name: "Berserk", image: this.Ultimates.berserk, threshold: 200, path: './imgs/buffs/Berserk-noborder.data.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Deaths Swiftness", image: this.Ultimates.deathsSwiftness, threshold: 270, path: './imgs/icons/deaths_swiftness.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Greater Deaths Swiftness", image: this.Ultimates.greaterDeathsSwiftness, threshold: 450, path: "./imgs/buffs/Greater_Death's_Swiftness-noborder.data.png",
@@ -331,7 +316,6 @@ export class BuffImageRegistry {
       {
         name: "Sunshine", image: this.Ultimates.sunshine, threshold: 500, path: './imgs/buffs/Sunshine-noborder.data.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Greater Sunshine", image: this.Ultimates.greaterSunshine, threshold: 100, path: './imgs/buffs/Greater_Sunshine-noborder.data.png',
@@ -339,34 +323,28 @@ export class BuffImageRegistry {
       {
         name: "Living Death", image: this.Ultimates.livingDeath, threshold: 400, path: './imgs/buffs/Living_Death-noborder.data.png',
         abilityCooldown: 90,
-        hasAbilityCooldown: true,
       },
 
       // --- SIGILS ---
       {
         name: "Limitless", image: this.Sigils.limitless, threshold: 250, path: './imgs/buffs/Limitless-noborder.data.png',
         abilityCooldown: 90,
-        hasAbilityCooldown: true,
       },
       {
         name: "Demon Slayer", image: this.Sigils.demonSlayer, threshold: 400, path: './imgs/buffs/Demon_Slayer-noborder.data.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Dragon Slayer", image: this.Sigils.dragonSlayer, threshold: 400, path: './imgs/buffs/Dragon_Slayer-noborder.data.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Undead Slayer", image: this.Sigils.undeadSlayer, threshold: 400, path: './imgs/buffs/Undead_Slayer-noborder.data.png',
         abilityCooldown: 60,
-        hasAbilityCooldown: true,
       },
       {
         name: "Ingenuity of the Humans", image: this.Sigils.ingenuityOfTheHumans, threshold: 400, path: './imgs/buffs/Ingenuity_of_the_Humans-noborder.data.png',
         abilityCooldown: 90,
-        hasAbilityCooldown: true,
       },
       {
         name: "Death Mark", image: this.Target.deathMark, path: './imgs/icons/death_mark.png',

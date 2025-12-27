@@ -265,7 +265,6 @@ export class BuffManager {
       abilityCooldown: cooldownState.abilityCooldown,
       abilityCooldownProgress: cooldownState.abilityCooldownProgress,
       abilityCooldownMax: cooldownState.abilityCooldownMax,
-      hasAbilityCooldown: !!buffData.hasAbilityCooldown,
       isStack: !!buffData.isStack,
       text: durationState.text
     });
@@ -313,7 +312,7 @@ export class BuffManager {
     buffData: BuffData,
     newBuffProgress: number
   ): { abilityCooldown: number; abilityCooldownMax: number; abilityCooldownProgress: number } => {
-    const hasCooldown = !!buffData.hasAbilityCooldown;
+    const hasCooldown = !!buffData.abilityCooldown;
     const initialCooldown = hasCooldown ? buffData.abilityCooldown ?? 0 : 0;
 
     if (!existingBuff) {
@@ -383,7 +382,7 @@ export class BuffManager {
     buff.buffProgress = 0;
     buff.text = '';
 
-    if (!buff.hasAbilityCooldown) {
+    if (!buff.abilityCooldown) {
       buff.abilityCooldown = 0;
       buff.abilityCooldownMax = 0;
       buff.abilityCooldownProgress = 0;
@@ -444,7 +443,6 @@ export class BuffManager {
       abilityCooldown: buff.abilityCooldown,
       abilityCooldownProgress: buff.abilityCooldownProgress,
       abilityCooldownMax: buff.abilityCooldownMax,
-      hasAbilityCooldown: buff.hasAbilityCooldown,
       isStack: buff.isStack,
       text: buff.text
     }));
@@ -469,7 +467,6 @@ export class BuffManager {
           abilityCooldownProgress: buff.abilityCooldownProgress || 0,
           abilityCooldownMax: buff.abilityCooldownMax || 0,
           order: buff.order ?? 999,
-          hasAbilityCooldown: buff.hasAbilityCooldown,
           isStack: buff.isStack,
           text: buff.text || ''
         });
